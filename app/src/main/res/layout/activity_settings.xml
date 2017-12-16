@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
+    tools:context="de.htwg.moco.bulbdj.activities.SettingsActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/settings_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <Switch
+        android:id="@+id/auto_connect"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_medium"
+        android:layout_gravity="left"
+        android:background="@color/colorBackground"
+        android:text="@string/auto_connect_start"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/buttonTextColor"/>
+
+    <Button
+        android:id="@+id/disconnect"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_large"
+        android:layout_gravity="left"
+        android:background="@color/colorBackground"
+        android:text="@string/disconnect"
+        android:textSize="@dimen/text_size_medium"
+        android:textColor="@color/buttonTextColor"/>
+
+    <Button
+        android:id="@+id/setup"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_large"
+        android:layout_gravity="left"
+        android:background="@color/colorBackground"
+        android:text="@string/setup"
+        android:textSize="@dimen/text_size_medium"
+        android:textColor="@color/buttonTextColor" />
+
+</LinearLayout>

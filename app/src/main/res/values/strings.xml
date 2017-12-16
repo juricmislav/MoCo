@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BulbDJ</string>
+    <string name="action_settings">Settings</string>
+    <string name="auto_connect_start">Auto connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="setup">Setup</string>
+    <string name="search_bridges">Search bridges</string>
+    <string name="settings">Settings</string>
+    <string name="random_lights">Random lights</string>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="layout_height_large">55dp</dimen>
+    <dimen name="layout_height_medium">50dp</dimen>
+    <dimen name="button_margin">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_medium">15sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+</resources>
