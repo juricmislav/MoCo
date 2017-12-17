@@ -1,13 +1,19 @@
 package de.htwg.moco.bulbdj.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -18,15 +24,20 @@ import com.philips.lighting.model.PHHueParsingError;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.htwg.moco.bulbdj.R;
 import de.htwg.moco.bulbdj.bridge.BridgeController;
 import de.htwg.moco.bulbdj.data.ConnectionProperties;
+import de.htwg.moco.bulbdj.detector.AudioManager;
+import de.htwg.moco.bulbdj.detector.BeatDetector;
+import de.htwg.moco.bulbdj.renderers.LEDRenderer;
+import de.htwg.moco.bulbdj.views.DemoView;
+import de.htwg.moco.bulbdj.views.VisualizerView;
 
 /**
  * Class represents main activity that is shown when application is started.
@@ -44,21 +55,21 @@ import de.htwg.moco.bulbdj.data.ConnectionProperties;
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * Random lights button.
-     */
-    @BindView(R.id.random_lights)
-    Button randomLights;
-
-    /**
-     * Seek bar for brightness.
-     */
-    @BindView(R.id.seek_bar)
-    SeekBar seekBar;
-
-    /**
      * Result code identificator.
      */
     public static final int DISPLAY_RESULT_CODE = 500;
+
+    /**
+     * Permission request for record audio.
+     */
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+
+
+    private AudioManager audioManager;
+    private LEDRenderer ledRenderer;
+
+    private VisualizerView visualizerView;
+    private DemoView demoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +85,114 @@ public class MainActivity extends AppCompatActivity {
                 BridgeController.getInstance().propertiesDefined()) {
             autoConnect();
         }
-        setSeekBarListener();
+
+        visualizerView = (VisualizerView) findViewById(R.id.visualizerView);
+        demoView = (DemoView) findViewById(R.id.demoView);
+        ledRenderer = new LEDRenderer();
+        audioManager = AudioManager.getInstance();
+
+        audioManager.setAudioMangerListener(new AudioManager.AudioManagerListener() {
+            @Override
+            public void onBeatDetected(ArrayList<BeatDetector.BEAT_TYPE> beats) {
+                if (audioManager.isDetectorOn())
+                    ledRenderer.updateBeats(beats);
+            }
+
+            @Override
+            public void onStop() {
+                visualizerView.stop();
+                ledRenderer.stop();
+            }
+
+            @Override
+            public void onUpdated(double[] result) {
+                visualizerView.updateVisualizer(result);
+                if (!audioManager.isDetectorOn())
+                    ledRenderer.updateFrequency(result);
+            }
+
+        });
+
+        ledRenderer.setLEDRendererListener(new LEDRenderer.LEDRendererListener() {
+
+            @Override
+            public void onUpdate(int r, int g, int b) {
+                if (!BridgeController.getInstance().isConnected()) {
+                    // Show LEDs on Display
+                    demoView.updateVisualizer(r, g, b);
+                } else {
+                    // TODO test
+                    // SHow LEDs on PHBridge
+                    PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
+                    PHBridgeResourcesCache cache = bridge.getResourceCache();
+
+                    List<PHLight> allLights = cache.getAllLights();
+
+                    if (allLights.size() == 3) {
+                        PHLight lightR = allLights.get(0);
+                        PHLightState lightStateR = new PHLightState();
+                        lightStateR.setHue(0);
+                        lightStateR.setBrightness(lightR.getLastKnownLightState().getBrightness());
+                        bridge.updateLightState(lightR, lightStateR);
+
+                        PHLight lightG = allLights.get(1);
+                        PHLightState lightStateG = new PHLightState();
+                        lightStateG.setHue(25500);
+                        lightStateG.setBrightness(lightG.getLastKnownLightState().getBrightness());
+                        bridge.updateLightState(lightG, lightStateG);
+
+                        PHLight lightB = allLights.get(2);
+                        PHLightState lightStateB = new PHLightState();
+                        lightStateB.setHue(46920);
+                        lightStateB.setBrightness(lightB.getLastKnownLightState().getBrightness());
+                        bridge.updateLightState(lightB, lightStateB);
+                    } else {
+                        Random rand = new Random();
+                        for (PHLight light : allLights) {
+                            PHLightState lightState = new PHLightState();
+                            lightState.setHue(rand.nextInt(65535));
+                            lightState.setBrightness(light.getLastKnownLightState().getBrightness());
+                            bridge.updateLightState(light, lightState);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onStop() {
+                demoView.stop();
+            }
+        });
+
+        loadSettings();
+
+        if (!BridgeController.getInstance().isConnected()) {
+            demoView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Load all settings.
+     */
+    private void loadSettings() {
+        SharedPreferences settings = getSharedPreferences("beatDetection", MODE_PRIVATE);
+        int sensitivity = settings.getInt("sensitivity", -1);
+        audioManager.setSettings(sensitivity);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startRecorder();
+
+                } else {
+                    stopRecorder();
+                }
+                return;
+            }
+        }
     }
 
     @Override
@@ -89,15 +207,19 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, DISPLAY_RESULT_CODE);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivityForResult(intent, DISPLAY_RESULT_CODE);
+                return true;
+            case R.id.action_manual:
+                Intent i = new Intent(this, ManualActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -112,6 +234,64 @@ public class MainActivity extends AppCompatActivity {
         BridgeController.getInstance().getPHHueSDK().connect(accessPoint);
     }
 
+    /**
+     * Start the recorder.
+     * @param button
+     */
+    private void startRecorder(Button button)
+    {
+        button.setText(R.string.stop);
+        startRecorder();
+    }
+
+    /**
+     * Start the recorder.
+     */
+    private void startRecorder()
+    {
+        audioManager.start();
+    }
+
+    /**
+     * Stop the recorder.
+     * @param button
+     */
+    private void stopRecorder(Button button)
+    {
+        button.setText(R.string.record);
+        stopRecorder();
+    }
+
+    /**
+     * Stop the recorder.
+     */
+    private void stopRecorder()
+    {
+        audioManager.stop();
+    }
+
+    @OnClick(R.id.start_stop_btn)
+    void startStop(Button button) {
+        if (audioManager.isRunning()) {
+            stopRecorder(button);
+        } else {
+            checkMicPermission();
+            startRecorder(button);
+        }
+    }
+
+    /**
+     * Check for microphone permissions.
+     */
+    private void checkMicPermission() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+    }
+
+    /*
     @OnClick(R.id.random_lights)
     void randomLights() {
         if (!BridgeController.getInstance().isConnected()) return;
@@ -129,10 +309,12 @@ public class MainActivity extends AppCompatActivity {
             bridge.updateLightState(light, lightState);
         }
     }
+    */
 
     /**
      * Method initializes listener for the seek bar.
      */
+    /*
     void setSeekBarListener() {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -164,6 +346,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
     /**
      * Method is executed on activity result.

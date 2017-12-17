@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.htwg.moco.bulbdj">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="false"
         android:logo="@drawable/icon"
@@ -20,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ManualActivity" />
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.SetupActivity"></activity>
     </application>
