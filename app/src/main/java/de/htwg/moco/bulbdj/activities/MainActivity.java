@@ -35,6 +35,7 @@ import de.htwg.moco.bulbdj.bridge.BridgeController;
 import de.htwg.moco.bulbdj.data.ConnectionProperties;
 import de.htwg.moco.bulbdj.detector.AudioManager;
 import de.htwg.moco.bulbdj.detector.BeatDetector;
+import de.htwg.moco.bulbdj.detector.MODES;
 import de.htwg.moco.bulbdj.renderers.LEDRenderer;
 import de.htwg.moco.bulbdj.views.DemoView;
 import de.htwg.moco.bulbdj.views.VisualizerView;
@@ -171,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
         if (!BridgeController.getInstance().isConnected()) {
             demoView.setVisibility(View.VISIBLE);
         }
+
+        // Load stuff after orientation changed etc.
+        if (audioManager.isRunning())
+            recordButton.setText(R.string.stop);
     }
 
     /**
@@ -179,7 +184,9 @@ public class MainActivity extends AppCompatActivity {
     private void loadSettings() {
         SharedPreferences settings = getSharedPreferences("beatDetection", MODE_PRIVATE);
         int sensitivity = settings.getInt("sensitivity", -1);
+        int mode = settings.getInt("mode", 0);
         audioManager.setSettings(sensitivity);
+        audioManager.setBeatDetectorOn(mode == 0);
     }
 
     @Override
