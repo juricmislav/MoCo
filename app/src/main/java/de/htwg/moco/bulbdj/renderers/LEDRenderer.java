@@ -1,5 +1,7 @@
 package de.htwg.moco.bulbdj.renderers;
 
+import android.util.Log;
+
 import de.htwg.moco.bulbdj.detector.BeatDetector;
 
 import java.util.ArrayList;
@@ -58,6 +60,16 @@ public class LEDRenderer {
     private long lastUpdateTime = 0;
 
     /**
+     * Value of the max DB.
+     */
+    private int maxDbValue = 30;
+
+    /**
+     * Time of the max DB.
+     */
+    private long maxDbTime = 0;
+
+    /**
      * Default constructor.
      */
     public LEDRenderer() {
@@ -110,9 +122,8 @@ public class LEDRenderer {
             double ifk = data[2 * i + 1];
             double magnitude = (rfk * rfk + ifk * ifk);
             int dbValueRaw = (int) (10 * Math.log10(magnitude));
-            //dbValueRaw += 30;               // Sensitivity. Lowest db Value is -30db.
+            dbValueRaw += 20;               // Sensitivity. Lowest db Value is -30db.
             int dbValuePositive = Math.max(0, dbValueRaw);
-            int maxDbValue = 30;            // Max Sensitivity is 30db.
             float dbValue = (float) dbValuePositive / maxDbValue * 255;
             dbValue = Math.min(dbValue, 255);
 
@@ -123,6 +134,22 @@ public class LEDRenderer {
             else
                 b+= dbValue;
         }
+
+        if (r > maxDbValue) {
+            maxDbValue = r;
+            maxDbTime = System.currentTimeMillis();
+        }
+        if (g > maxDbValue) {
+            maxDbValue = g;
+            maxDbTime = System.currentTimeMillis();
+        }
+        if (b > maxDbValue) {
+            maxDbValue = b;
+            maxDbTime = System.currentTimeMillis();
+        }
+
+        if (maxDbTime > System.currentTimeMillis() - 5000)
+            maxDbValue = 10;
 
         doUpdate(r, g, b);
     }

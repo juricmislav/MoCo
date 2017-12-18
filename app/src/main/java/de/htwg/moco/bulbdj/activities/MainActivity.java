@@ -86,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
             autoConnect();
         }
 
+        Button recordButton = (Button) findViewById(R.id.start_stop_btn);
         visualizerView = (VisualizerView) findViewById(R.id.visualizerView);
+        visualizerView.setRadius(recordButton.getWidth());
         demoView = (DemoView) findViewById(R.id.demoView);
         ledRenderer = new LEDRenderer();
         audioManager = AudioManager.getInstance();

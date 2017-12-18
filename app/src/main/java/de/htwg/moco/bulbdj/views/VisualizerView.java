@@ -32,7 +32,7 @@ public class VisualizerView extends View {
 
     private Rect rect = new Rect();
     private BarGraphRenderer renderer;
-    private int radius = 120;
+    private int radius = 150;
 
     private double[] bytes;
 
