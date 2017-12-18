@@ -21,45 +21,40 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <view
             android:id="@+id/demoView"
             class="de.htwg.moco.bulbdj.views.DemoView"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:layout_above="@+id/squareLayout"
             android:layout_centerHorizontal="true"
             android:visibility="invisible" />
 
-        <de.htwg.moco.bulbdj.views.SquareLayout
-            android:id="@+id/squareLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_margin="20dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
 
             <view
                 android:id="@+id/visualizerView"
                 class="de.htwg.moco.bulbdj.views.VisualizerView"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/start_stop_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:background="@drawable/button_bg_round"
-                android:text="@string/record"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </de.htwg.moco.bulbdj.views.SquareLayout>
-
+                android:text="@string/record" />
     </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

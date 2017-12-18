@@ -99,11 +99,11 @@ public class VisualizerView extends View {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, width);
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int wh = widthMeasureSpec < heightMeasureSpec ? widthMeasureSpec : heightMeasureSpec;
+        super.onMeasure(wh, wh);
+        int size = MeasureSpec.getSize(wh);
+        setMeasuredDimension(size, size);
     }
 
     public void stop() {
