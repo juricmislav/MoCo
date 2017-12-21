@@ -1,5 +1,7 @@
 package de.htwg.moco.bulbdj.detector;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**

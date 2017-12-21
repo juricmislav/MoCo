@@ -137,6 +137,5 @@
     <orderEntry type="library" exported="" name="com.android.support:support-fragment-26.0.0-alpha1" level="project" />
     <orderEntry type="library" exported="" name="com.jakewharton:butterknife-annotations:8.6.0@jar" level="project" />
     <orderEntry type="library" exported="" name="org.apache.commons:commons-math3:3.5@jar" level="project" />
-    <orderEntry type="library" exported="" name="android-android-26" level="project" />
   </component>
 </module>

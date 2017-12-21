@@ -70,6 +70,11 @@ public class LEDRenderer {
     private long maxDbTime = 0;
 
     /**
+     * Red, Green, Blue
+     */
+    private int r = -1, g = -1, b = -1;
+
+    /**
      * Default constructor.
      */
     public LEDRenderer() {
@@ -110,9 +115,6 @@ public class LEDRenderer {
      * @param data the fft data.
      */
     public void updateFrequency(double[] data) {
-
-        // TODO flexible maxDbValue.
-
         int r = 0, g = 0, b = 0;
         int limit = data.length / 2;
         int limitThird = limit / 3;
@@ -162,9 +164,13 @@ public class LEDRenderer {
      */
     private void doUpdate(int r, int g, int b) {
 
-        if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime) {
+        if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime && (this.r != r || this.g != g || this.b != b)) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
             listener.onUpdate(r, g, b);
             lastUpdateTime = System.currentTimeMillis();
+            Log.d("LED update", String.valueOf(r) + " " + String.valueOf(g) + " " + String.valueOf(b));
         }
     }
 

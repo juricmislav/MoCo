@@ -120,10 +120,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onUpdate(int r, int g, int b) {
-                if (!BridgeController.getInstance().isConnected()) {
+                //if (!BridgeController.getInstance().isConnected()) {
                     // Show LEDs on Display
                     demoView.updateVisualizer(r, g, b);
-                } else {
+                //} else {
+                if (BridgeController.getInstance().isConnected()) {
                     // TODO test
                     // SHow LEDs on PHBridge
                     PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
