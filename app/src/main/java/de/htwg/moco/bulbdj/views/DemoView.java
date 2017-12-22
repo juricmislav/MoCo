@@ -75,14 +75,22 @@ public class DemoView extends View {
 
     /**
      * Update visualizer.
-     * @param r
-     * @param g
-     * @param b
+     * @param bulbs the bulbs colors
      */
-    public void updateVisualizer(int r, int g, int b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
+    public void updateVisualizer(int [] bulbs) {
+        if (bulbs.length > 2) {
+            this.r = bulbs[0];
+            this.g = bulbs[1];
+            this.b = bulbs[2];
+        } else if (bulbs.length > 1) {
+            this.r = bulbs[0];
+            this.g = bulbs[1];
+            this.b = bulbs[0];
+        } else if (bulbs.length > 0) {
+            this.r = bulbs[0];
+            this.g = bulbs[0];
+            this.b = bulbs[0];
+        }
 
         // Draw again
         invalidate();
@@ -101,9 +109,9 @@ public class DemoView extends View {
         rectG = new Rect(getWidth() / 2 - width / 2, width / 3, getWidth() / 2 + width / 2, height - 1);
         rectB = new Rect(getWidth() - width, width / 3, getWidth(), height - 1);
 
-        paintR.setColor(Color.argb(r, 255, 0, 0));
-        paintG.setColor(Color.argb(g, 0, 255, 0));
-        paintB.setColor(Color.argb(b, 0, 0, 255));
+        paintR.setColor(r);
+        paintG.setColor(g);
+        paintB.setColor(b);
 
         this.canvas.drawRect(rectR, paintR);
         this.canvas.drawRect(rectG, paintG);
@@ -119,7 +127,7 @@ public class DemoView extends View {
      */
     public void stop() {
         if (canvas != null) {
-            updateVisualizer(0, 0, 0);
+            updateVisualizer(new int[]{0, 0, 0});
         }
     }
 }

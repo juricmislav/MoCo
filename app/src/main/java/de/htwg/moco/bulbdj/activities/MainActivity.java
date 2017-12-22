@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -119,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
         ledRenderer.setLEDRendererListener(new LEDRenderer.LEDRendererListener() {
 
             @Override
-            public void onUpdate(int r, int g, int b) {
+            public void onUpdate(int [] bulbs) {
                 //if (!BridgeController.getInstance().isConnected()) {
                     // Show LEDs on Display
-                    demoView.updateVisualizer(r, g, b);
+                    demoView.updateVisualizer(bulbs);
                 //} else {
                 if (BridgeController.getInstance().isConnected()) {
                     // TODO test
@@ -132,32 +133,24 @@ public class MainActivity extends AppCompatActivity {
 
                     List<PHLight> allLights = cache.getAllLights();
 
-                    if (allLights.size() == 3) {
-                        PHLight lightR = allLights.get(0);
-                        PHLightState lightStateR = new PHLightState();
-                        lightStateR.setHue(0);
-                        lightStateR.setBrightness(lightR.getLastKnownLightState().getBrightness());
-                        bridge.updateLightState(lightR, lightStateR);
+                    int color = 0;
+                    for (int i = 0; i < allLights.size(); i++) {
+                        if (i < bulbs.length)
+                            color = bulbs[i];
 
-                        PHLight lightG = allLights.get(1);
-                        PHLightState lightStateG = new PHLightState();
-                        lightStateG.setHue(25500);
-                        lightStateG.setBrightness(lightG.getLastKnownLightState().getBrightness());
-                        bridge.updateLightState(lightG, lightStateG);
+                        // Color conversion
+                        float[] hsv = new float[3];
+                        Color.colorToHSV(color, hsv);
+                        int hue = (int)hsv[0] * 182;
+                        int sat = (int)hsv[1] * 254;
+                        int val = (int)hsv[2] * 254;
 
-                        PHLight lightB = allLights.get(2);
-                        PHLightState lightStateB = new PHLightState();
-                        lightStateB.setHue(46920);
-                        lightStateB.setBrightness(lightB.getLastKnownLightState().getBrightness());
-                        bridge.updateLightState(lightB, lightStateB);
-                    } else {
-                        Random rand = new Random();
-                        for (PHLight light : allLights) {
-                            PHLightState lightState = new PHLightState();
-                            lightState.setHue(rand.nextInt(65535));
-                            lightState.setBrightness(light.getLastKnownLightState().getBrightness());
-                            bridge.updateLightState(light, lightState);
-                        }
+                        PHLight light = allLights.get(i);
+                        PHLightState lightState = new PHLightState();
+                        lightState.setHue(hue);
+                        lightState.setSaturation(sat);
+                        lightState.setBrightness(val);
+                        bridge.updateLightState(light, lightState);
                     }
                 }
             }

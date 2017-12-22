@@ -284,7 +284,7 @@ public class BeatDetector {
                 averageEnergy[i] += energyHistory[i][h];
             }
 
-            averageEnergy[i] /= (samplingRate / bufferSize);
+            averageEnergy[i] /= ((float) samplingRate / bufferSize);
         }
 
         for(int i = 0; i < fftSubBandsCount; i++) {

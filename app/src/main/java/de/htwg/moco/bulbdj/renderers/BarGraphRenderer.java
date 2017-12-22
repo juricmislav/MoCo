@@ -78,10 +78,10 @@ public class BarGraphRenderer
 
 
             float angel = (float) (360.0 / limit) * i - 90;
-            float startX = (float) (Math.cos(Math.toRadians(angel)) * radius + width / 2);
-            float startY = (float) (Math.sin(Math.toRadians(angel)) * radius + width / 2);
-            float endX = (float) (Math.cos(Math.toRadians(angel)) * (radius + (dbValue)) + width / 2);
-            float endY = (float) (Math.sin(Math.toRadians(angel)) * (radius + (dbValue)) + width / 2);
+            float startX = (float) (Math.cos(Math.toRadians(angel)) * radius + width / 2F);
+            float startY = (float) (Math.sin(Math.toRadians(angel)) * radius + width / 2F);
+            float endX = (float) (Math.cos(Math.toRadians(angel)) * (radius + (dbValue)) + width / 2F);
+            float endY = (float) (Math.sin(Math.toRadians(angel)) * (radius + (dbValue)) + width / 2F);
 
             mFFTPoints[i * 4] = startX;
             mFFTPoints[i * 4 + 2] = endX;

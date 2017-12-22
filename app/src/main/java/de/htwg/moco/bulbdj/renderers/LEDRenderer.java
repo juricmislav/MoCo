@@ -1,10 +1,12 @@
 package de.htwg.moco.bulbdj.renderers;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import de.htwg.moco.bulbdj.detector.BeatDetector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class handles the visualisation of different modes and display it as RGB alpha.
@@ -24,11 +26,9 @@ public class LEDRenderer {
 
         /**
          * Update LED alpha.
-         * @param r is the alpha of the red color.
-         * @param g is the alpha of the green color.
-         * @param b is the alpha of the blue color.
+         * @param bulbs are the different colors of the bulbs.
          */
-        void onUpdate(int r, int g, int b);
+        void onUpdate(int [] bulbs);
 
         /**
          * Stop the LED lights.
@@ -55,6 +55,11 @@ public class LEDRenderer {
     private int delay = 25; // In milliseconds
 
     /**
+     * Number of bulbs to display. Default is 3.
+     */
+    private int bulbCount = 3;
+
+    /**
      * Value of the last updated time.
      */
     private long lastUpdateTime = 0;
@@ -72,46 +77,47 @@ public class LEDRenderer {
     /**
      * Red, Green, Blue
      */
-    private int r = -1, g = -1, b = -1;
+    private int bulbs[];
 
     /**
      * Default constructor.
      */
     public LEDRenderer() {
         this.listener = null;
+        bulbs = new int[bulbCount];
     }
 
     /**
-     * Renders the beats as r,g,b output.
+     * Renders the beats as colors output.
      * @param beats the detected beats.
      */
     public void updateBeats(ArrayList<BeatDetector.BEAT_TYPE> beats) {
-        int r = 0, g = 0, b = 0;
+        int [] bulbs = new int[bulbCount];
 
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
-            r = 0;
+            bulbs[0] = Color.argb(0,0,0,0);
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-            g = 0;
+            bulbs[1] = Color.argb(0,0,0,0);
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.HAT))
-            b = 0;
+            bulbs[2] = Color.argb(0,0,0,0);
 
 
         if (beats != null) {
             if (beats.contains(BeatDetector.BEAT_TYPE.KICK))
-                r = 255;
+                bulbs[0] = Color.argb(255,255,0,0);
             if (beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-                g = 255;
+                bulbs[1] = Color.argb(255,0,255,0);
             if (beats.contains(BeatDetector.BEAT_TYPE.HAT))
-                b = 255;
+                bulbs[2] = Color.argb(255,0,0,255);
             if (beats.contains(BeatDetector.BEAT_TYPE.MANUAL))
-                r = 255;
+                bulbs[0] = Color.argb(255,255,0,0);
         }
 
-        doUpdate(r, g, b);
+        doUpdate(bulbs);
     }
 
     /**
-     * Renders the raw fft data as r,g,b output.
+     * Renders the raw fft data as colors output.
      * @param data the fft data.
      */
     public void updateFrequency(double[] data) {
@@ -153,24 +159,24 @@ public class LEDRenderer {
         if (maxDbTime > System.currentTimeMillis() - 5000)
             maxDbValue = 10;
 
-        doUpdate(r, g, b);
+        doUpdate(new int[]{Color.argb(r, 255, 0, 0), Color.argb(g, 0, 255, 0), Color.argb(b, 0, 0, 255)});
     }
 
     /**
      * Call the final update function considering the delay.
-     * @param r is the alpha of the red color.
-     * @param g is the alpha of the green color.
-     * @param b is the alpha of the blue color.
+     * @param bulbs are the different colors of the bulbs.
      */
-    private void doUpdate(int r, int g, int b) {
+    private void doUpdate(int[] bulbs) {
 
-        if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime && (this.r != r || this.g != g || this.b != b)) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            listener.onUpdate(r, g, b);
+        if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime && !Arrays.equals(bulbs, this.bulbs)) {
+            this.bulbs = bulbs;
+            listener.onUpdate(bulbs);
             lastUpdateTime = System.currentTimeMillis();
-            Log.d("LED update", String.valueOf(r) + " " + String.valueOf(g) + " " + String.valueOf(b));
+            String s = "";
+            for (int color: bulbs) {
+                s += String.valueOf(color) + " ";
+            }
+            Log.d("LED update", s);
         }
     }
 
