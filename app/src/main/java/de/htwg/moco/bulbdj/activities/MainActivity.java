@@ -1,9 +1,11 @@
 package de.htwg.moco.bulbdj.activities;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,10 +13,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -27,7 +35,6 @@ import com.philips.lighting.model.PHLightState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,7 +43,7 @@ import de.htwg.moco.bulbdj.bridge.BridgeController;
 import de.htwg.moco.bulbdj.data.ConnectionProperties;
 import de.htwg.moco.bulbdj.detector.AudioManager;
 import de.htwg.moco.bulbdj.detector.BeatDetector;
-import de.htwg.moco.bulbdj.detector.MODES;
+import de.htwg.moco.bulbdj.detector.Modes;
 import de.htwg.moco.bulbdj.renderers.LEDRenderer;
 import de.htwg.moco.bulbdj.views.DemoView;
 import de.htwg.moco.bulbdj.views.VisualizerView;
@@ -94,6 +101,22 @@ public class MainActivity extends AppCompatActivity {
         demoView = (DemoView) findViewById(R.id.demoView);
         ledRenderer = new LEDRenderer();
         audioManager = AudioManager.getInstance();
+
+        Spinner modeSpinner = (Spinner) findViewById(R.id.modeSpinner);
+        ArrayAdapter spinnerAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, getResources().getStringArray(R.array.modes_array));
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        modeSpinner.setAdapter(spinnerAdapter);
+        modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                ledRenderer.setMode(Modes.values()[i]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         audioManager.setAudioMangerListener(new AudioManager.AudioManagerListener() {
             @Override

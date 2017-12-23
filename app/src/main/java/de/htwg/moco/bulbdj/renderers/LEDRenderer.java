@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import de.htwg.moco.bulbdj.detector.BeatDetector;
+import de.htwg.moco.bulbdj.detector.Modes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,16 @@ public class LEDRenderer {
     private long lastUpdateTime = 0;
 
     /**
+     * Value of the last color change.
+     */
+    private long lastColorChange = 0;
+
+    /**
+     * Last colors.
+     */
+    private int [] lastColors;
+
+    /**
      * Value of the max DB.
      */
     private int maxDbValue = 30;
@@ -80,11 +91,68 @@ public class LEDRenderer {
     private int bulbs[];
 
     /**
+     * Display mode
+     */
+    private int mode;
+
+    /**
+     * Possible colors for all modes.
+     */
+    private final int [][] allColors = {{Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW},  // DEFAULT / AUTOMATICAL
+                                    {Color.RED},    //POP
+                                    {Color.YELLOW}, // RAP
+                                    {Color.MAGENTA},    // ROCK
+                                    {Color.BLUE},   // DANCE
+                                    {Color.CYAN}};  // ELECTRO
+
+    /**
+     * Different interval for all modes
+     */
+    private final int [] colorInterval = {2000,
+            2000,
+            2000,
+            2000,
+            2000,
+            2000
+    };
+
+    /**
      * Default constructor.
      */
     public LEDRenderer() {
         this.listener = null;
         bulbs = new int[bulbCount];
+        lastColors = new int[bulbCount];
+    }
+
+    /**
+     * Setter method.
+     *
+     * @param mode of the colors
+     */
+    public void setMode(Modes mode) {
+        int modeI;
+        switch(mode) {
+            case POP:
+                modeI = 1;
+                break;
+            case RAP:
+                modeI = 2;
+                break;
+            case ROCK:
+                modeI = 3;
+                break;
+            case DANCE:
+                modeI = 4;
+                break;
+            case ELECTRO:
+                modeI = 5;
+                break;
+            case AUTOMATICAL:
+            default:
+                modeI = 0;
+        }
+        this.mode = modeI;
     }
 
     /**
@@ -93,24 +161,25 @@ public class LEDRenderer {
      */
     public void updateBeats(ArrayList<BeatDetector.BEAT_TYPE> beats) {
         int [] bulbs = new int[bulbCount];
+        bulbs = calcColors(bulbs);
 
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
-            bulbs[0] = Color.argb(0,0,0,0);
+            bulbs[0] = Color.argb(0, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-            bulbs[1] = Color.argb(0,0,0,0);
+            bulbs[1] = Color.argb(0, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1]));
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.HAT))
-            bulbs[2] = Color.argb(0,0,0,0);
+            bulbs[2] = Color.argb(0, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]));
 
 
         if (beats != null) {
             if (beats.contains(BeatDetector.BEAT_TYPE.KICK))
-                bulbs[0] = Color.argb(255,255,0,0);
+                bulbs[0] = Color.argb(255, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
             if (beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-                bulbs[1] = Color.argb(255,0,255,0);
+                bulbs[1] = Color.argb(255, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1]));
             if (beats.contains(BeatDetector.BEAT_TYPE.HAT))
-                bulbs[2] = Color.argb(255,0,0,255);
+                bulbs[2] = Color.argb(255, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]));
             if (beats.contains(BeatDetector.BEAT_TYPE.MANUAL))
-                bulbs[0] = Color.argb(255,255,0,0);
+                bulbs[0] = Color.argb(255, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
         }
 
         doUpdate(bulbs);
@@ -159,7 +228,9 @@ public class LEDRenderer {
         if (maxDbTime > System.currentTimeMillis() - 5000)
             maxDbValue = 10;
 
-        doUpdate(new int[]{Color.argb(r, 255, 0, 0), Color.argb(g, 0, 255, 0), Color.argb(b, 0, 0, 255)});
+        int [] bulbs = new int[bulbCount];
+        bulbs = calcColors(bulbs);
+        doUpdate(new int[]{Color.argb(r, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0])), Color.argb(g, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1])), Color.argb(b, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]))});
     }
 
     /**
@@ -178,6 +249,50 @@ public class LEDRenderer {
             }
             Log.d("LED update", s);
         }
+    }
+
+    /**
+     *
+     * Calculate the colors by time and selected mode.
+     *
+     * @param bulbs to modify color
+     * @return calculated colors
+     */
+    private int[] calcColors(int[] bulbs) {
+
+        if (System.currentTimeMillis() - colorInterval[mode] > lastColorChange) {
+            lastColorChange = System.currentTimeMillis();
+            for (int i = 0; i < bulbs.length; i++) {
+                bulbs[i] = nextColor(i);
+                lastColors[i] = bulbs[i];
+            }
+        } else {
+            for (int i = 0; i < bulbs.length; i++) {
+                bulbs[i] = lastColors[i];
+            }
+        }
+
+        return bulbs;
+    }
+
+    /**
+     * Get the next color of all possible colors of the current mode.
+     *
+     * @param iGlobal index of the current bulb
+     * @return color of the bulb
+     */
+    private int nextColor(int iGlobal) {
+        int color;
+        int nextI = 0;
+        for(int i = 0; i < allColors[mode].length; i++) {
+            if (allColors[mode][i] == lastColors[iGlobal]) {
+                nextI = i;
+                break;
+            }
+        }
+        nextI = ++nextI % allColors[mode].length;
+        color = allColors[mode][nextI];
+        return color;
     }
 
     /**

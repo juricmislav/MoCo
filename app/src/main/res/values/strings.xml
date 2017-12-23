@@ -14,4 +14,13 @@
     <string name="min">Min</string>
     <string name="max">Max</string>
     <string name="action_manual">Manual</string>
+    <string name="action_adjust">Adjust</string>
+    <string-array name="modes_array">
+        <item name="AUTOMATICAL">Automatical</item>
+        <item name="POP">Pop</item>
+        <item name="RAP">Rap</item>
+        <item name="ROCK">Rock</item>
+        <item name="DANCE">Dance</item>
+        <item name="ELECTRO">Electro</item>
+    </string-array>
 </resources>

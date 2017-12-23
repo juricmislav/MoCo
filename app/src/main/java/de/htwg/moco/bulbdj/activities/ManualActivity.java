@@ -11,7 +11,7 @@ import android.widget.Switch;
 
 import de.htwg.moco.bulbdj.R;
 import de.htwg.moco.bulbdj.detector.AudioManager;
-import de.htwg.moco.bulbdj.detector.MODES;
+import de.htwg.moco.bulbdj.detector.Types;
 
 public class ManualActivity extends AppCompatActivity {
 
@@ -88,9 +88,9 @@ public class ManualActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
-                    setMode(MODES.FREQUENCY);
+                    setMode(Types.FREQUENCY);
                 else
-                    setMode(MODES.BEAT);
+                    setMode(Types.BEAT);
             }
         });
     }
@@ -121,9 +121,9 @@ public class ManualActivity extends AppCompatActivity {
      * Set the mode of visualization.
      * @param mode of visualization
      */
-    public void setMode(MODES mode) {
-        AudioManager.getInstance().setBeatDetectorOn(mode == MODES.BEAT);
-        editor.putInt("mode", mode.compareTo(MODES.BEAT));
+    public void setMode(Types mode) {
+        AudioManager.getInstance().setBeatDetectorOn(mode == Types.BEAT);
+        editor.putInt("mode", mode.compareTo(Types.BEAT));
         editor.commit();
     }
 
