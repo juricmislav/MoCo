@@ -1,11 +1,9 @@
 package de.htwg.moco.bulbdj.activities;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,8 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -110,6 +105,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 ledRenderer.setMode(Modes.values()[i]);
+
+                int value = 100 - (int) ((audioManager.getSensitivity(Modes.values()[i]) - 1F) * 100F);
+                SharedPreferences settings = getSharedPreferences("beatDetection", MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt("sensitivity", value);
+                editor.commit();
+
+                audioManager.setMode(Modes.values()[i]);
             }
 
             @Override

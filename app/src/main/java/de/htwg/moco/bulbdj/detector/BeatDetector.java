@@ -1,12 +1,11 @@
 package de.htwg.moco.bulbdj.detector;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 /**
  * Class detects some beats like kick, snare and hat.
- * For this some sub bands are created to separate the frequency in some divisions.
+ * For this some sub bands are created to
+ * separate the frequency in some divisions.
  * Kick, Snare and Hat have their own frequency range.
  *
  *
@@ -38,7 +37,7 @@ public class BeatDetector {
     /**
      * Enum of beat types.
      */
-    public enum BEAT_TYPE {KICK, SNARE, HAT, MANUAL};
+    public enum BEAT_TYPE { KICK, SNARE, HAT, MANUAL };
 
     private float[] magnitude = null;
     private float[] avgMagnitude = null;
@@ -55,10 +54,10 @@ public class BeatDetector {
     private int historyPos = 0;
     private int divisions = 2;
     private int timeToWait = 0;    // In milliseconds
-    private int fftSubBandsCount = 64;//32;   // More Bands = more sensitivity. Less Bands = more recognizations for different music types.
+    private int fftSubBandsCount = 64;  //32;   // More Bands = more sensitivity. Less Bands = more recognizations for different music types.
     private long lastBeat = 0;
     private float threshold = 0.05F;
-    private float sensitivity = 1.35F;   //1.523F; //1.35F; //1.2F; // Different sencitivity for electro / dubstep or rap for example.
+    private float sensitivity = 1.35F;
     private int manualLow = -1;
     private int manualHigh = -1;
 
@@ -93,8 +92,9 @@ public class BeatDetector {
      * @param beats
      */
     private void beatDetected(ArrayList<BEAT_TYPE> beats) {
-        if (listener != null)
+        if (listener != null) {
             listener.onBeatDetected(beats);
+        }
     }
 
     /**
@@ -120,7 +120,7 @@ public class BeatDetector {
      * Setter method.
      * @param percentage of the sensitivity from 0 to 100
      */
-    public void setSensitivity(int percentage) {
+    public void setSensitivityPercent(int percentage) {
         if (percentage >= 0) {
             float sensitivity = (100F - percentage) / 100F;
             float maxWeight = 2.0F;
@@ -128,6 +128,18 @@ public class BeatDetector {
             float range = maxWeight - minWeight;
 
             this.sensitivity = minWeight + range * sensitivity;
+        } else {
+            throw new RuntimeException("Sensitivity is negative.");
+        }
+    }
+
+    /**
+     * Setter method.
+     * @param sensitivity of the beat detection
+     */
+    public void setSensitivity(float sensitivity) {
+        if (sensitivity >= 0) {
+            this.sensitivity = sensitivity;
         } else {
             throw new RuntimeException("Sensitivity is negative.");
         }
@@ -165,8 +177,9 @@ public class BeatDetector {
      */
     public void update(double[] input) {
 
-        if (magnitude == null)
+        if (magnitude == null) {
             init(fftSize);
+        }
 
         calcAll(input);
 
@@ -181,12 +194,13 @@ public class BeatDetector {
         beats.clear();
 
         if (manualLow < 0 || manualHigh < 0) {
-            if (isKick())
+            if (isKick()) {
                 beats.add(BEAT_TYPE.KICK);
-            else if (isSnare())
+            } else if (isSnare()) {
                 beats.add(BEAT_TYPE.SNARE);
-            else if (isHat())
+            } else if (isHat()) {
                 beats.add(BEAT_TYPE.HAT);
+            }
         } else if (isBeatRange(manualLow, manualHigh)) {
             beats.add(BEAT_TYPE.MANUAL);
         }
@@ -200,7 +214,7 @@ public class BeatDetector {
      */
     public boolean isKick() {
         // Frequency for Kicks in sub band ~0.
-        return isBeatRange(0,0);
+        return isBeatRange(0, 0);
     }
 
     /**
@@ -263,21 +277,21 @@ public class BeatDetector {
             avgMagnitude[i] = (magnitude[i] * factor) + (avgMagnitude[i] * (1 - factor));
         }
 
-        for(int i = 0; i < fftSubBandsCount; i++) {
-            for (int i2 = 0; i2 < fftSize/fftSubBandsCount; i2++) {
+        for (int i = 0; i < fftSubBandsCount; i++) {
+            for (int i2 = 0; i2 < fftSize / fftSubBandsCount; i2++) {
                 fftSubBands[i] += magnitude[i * (fftSize / fftSubBandsCount) + i2];
             }
-            fftSubBands[i] *= (float)fftSubBandsCount / (float) fftSize;
+            fftSubBands[i] *= (float) fftSubBandsCount / (float) fftSize;
 
-            for (int i2 = 0; i2 < fftSize/fftSubBandsCount; i2++) {
-                fftVariance[i] += Math.pow(magnitude[i * (fftSize/fftSubBandsCount) + i2] - fftSubBands[i], 2);
+            for (int i2 = 0; i2 < fftSize / fftSubBandsCount; i2++) {
+                fftVariance[i] += Math.pow(magnitude[i * (fftSize / fftSubBandsCount) + i2] - fftSubBands[i], 2);
             }
-            fftVariance[i] = fftVariance[i] * (float)fftSubBandsCount / (float) fftSize;
+            fftVariance[i] = fftVariance[i] * (float) fftSubBandsCount / (float) fftSize;
 
             beatValues[i] = (float) (-0.0025714 * fftVariance[i]) + sensitivity;
         }
 
-        for(int i = 0; i < fftSubBandsCount; i++) {
+        for (int i = 0; i < fftSubBandsCount; i++) {
             averageEnergy[i] = 0;
             for(int h = 0; h < samplingRate / bufferSize; h++) {
 
@@ -287,12 +301,12 @@ public class BeatDetector {
             averageEnergy[i] /= ((float) samplingRate / bufferSize);
         }
 
-        for(int i = 0; i < fftSubBandsCount; i++) {
+        for (int i = 0; i < fftSubBandsCount; i++) {
 
             energyHistory[i][historyPos] = fftSubBands[i];
         }
 
-        historyPos = (historyPos+1) % (samplingRate / bufferSize);
+        historyPos = (historyPos + 1) % (samplingRate / bufferSize);
     }
 
     /**

@@ -56,13 +56,14 @@ public class AudioManager {
 
     /**
      * The sampling rate.
+     * Sampling rate and Frequency spectrum = samplingRate / 2 in Hz
      */
-    private int samplingRate = 22050;//11025;   // Sampling rate and Frequency spectrum = samplingRate / 2 in Hz
+    private final int samplingRate = 22050;
 
     /**
      * The block size of the buffer.
      */
-    private int blockSize = 512;
+    private final int blockSize = 512;
 
     /**
      * Flag for run detection.
@@ -86,6 +87,7 @@ public class AudioManager {
 
     /**
      * Singleton instance of {@link AudioManager} class.
+     * @return instance of {@link AudioManager}
      */
     public static AudioManager getInstance() {
         if (instance == null)
@@ -94,7 +96,8 @@ public class AudioManager {
     }
 
     /**
-     * Default constructor. This method is private because of the singleton instance.
+     * Default constructor.
+     * This method is private because of the singleton instance.
      */
     private AudioManager() {
         this.listener = null;
@@ -108,7 +111,43 @@ public class AudioManager {
     public void setSettings(int sensitivity) {
 
         if (sensitivity >= 0)
-            detector.setSensitivity(sensitivity);
+            detector.setSensitivityPercent(sensitivity);
+    }
+
+    /**
+     * Setter method.
+     * @param mode sets the sensitivity for the beat detection
+     */
+    public void setMode(Modes mode) {
+        detector.setSensitivity(getSensitivity(mode));
+    }
+
+    /**
+     * Get the sensitivity for a specific mode.
+     * @param mode of beat detection
+     * @return sensitivity of beat detection
+     */
+    public float getSensitivity(Modes mode) {
+        float sensitivity;
+        switch(mode) {
+            case ELECTRO:
+                sensitivity = 1.2F;
+                break;
+            case DANCE:
+                sensitivity = 1.42F;
+                break;
+            case ROCK:
+                sensitivity = 1.5F;
+                break;
+            case RAP:
+                sensitivity = 1.6F;
+                break;
+            case POP:
+            case AUTOMATICAL:
+            default:
+                sensitivity = 1.35F;
+        }
+        return sensitivity;
     }
 
     /**
@@ -133,14 +172,16 @@ public class AudioManager {
      */
     public void start() {
         running = true;
-        audioRecorder = new AudioRecorder(samplingRate, blockSize);
+        audioRecorder =
+                new AudioRecorder(samplingRate, blockSize);
         audioRecorder.start();
         audioRecorder.setAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
             @Override
             public void onUpdate(double[] result) {
                 if (running) {
-                    if (isDetectorOn)
+                    if (isDetectorOn) {
                         detector.update(result);
+                    }
                     listener.onUpdated(result);
                 }
             }
@@ -163,7 +204,8 @@ public class AudioManager {
     }
 
     /**
-     *
+     * Is the detector on.
+     * @return if the detector is on.
      */
     public boolean isDetectorOn() {
         return isDetectorOn;

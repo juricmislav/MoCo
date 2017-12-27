@@ -114,9 +114,12 @@ public class AudioRecorder extends AsyncTask<Void, double[], Void> {
     protected Void doInBackground(Void... arg0) {
 
         try {
-            int bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding);
+            int bufferSize =
+                    AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding);
 
-            AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig, audioEncoding, bufferSize);
+            AudioRecord audioRecord =
+                    new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+                            channelConfig, audioEncoding, bufferSize);
 
             short[] buffer = new short[blockSize];
             double[] result = new double[blockSize];
@@ -132,8 +135,8 @@ public class AudioRecorder extends AsyncTask<Void, double[], Void> {
                 }
 
                 // Execute FFT
-                DoubleFFT_1D doubleFFT_1D = new DoubleFFT_1D(blockSize);
-                doubleFFT_1D.realForward(result);
+                DoubleFFT_1D doubleFFT = new DoubleFFT_1D(blockSize);
+                doubleFFT.realForward(result);
 
                 publishProgress(result);
             }
@@ -150,7 +153,8 @@ public class AudioRecorder extends AsyncTask<Void, double[], Void> {
 
     @Override
     protected void onProgressUpdate(double[]... result) {
-        if (listener != null)
+        if (listener != null) {
             listener.onUpdate(result[0]);
+        }
     }
 }

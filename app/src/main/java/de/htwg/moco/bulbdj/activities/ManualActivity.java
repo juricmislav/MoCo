@@ -119,11 +119,11 @@ public class ManualActivity extends AppCompatActivity {
 
     /**
      * Set the mode of visualization.
-     * @param mode of visualization
+     * @param type of visualization
      */
-    public void setMode(Types mode) {
-        AudioManager.getInstance().setBeatDetectorOn(mode == Types.BEAT);
-        editor.putInt("mode", mode.compareTo(Types.BEAT));
+    public void setMode(Types type) {
+        AudioManager.getInstance().setBeatDetectorOn(type == Types.BEAT);
+        editor.putInt("mode", type.compareTo(Types.BEAT));
         editor.commit();
     }
 

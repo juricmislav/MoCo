@@ -5,13 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -35,9 +30,9 @@ public class DemoView extends View {
     /**
      * The rects to draw.
      */
-    private Rect rectR;// = new Rect(30,30,80,80);
-    private Rect rectG;// = new Rect(100,30,150,80);
-    private Rect rectB;// = new Rect(170,30,220,80);
+    private Rect rectR; // = new Rect(30,30,80,80);
+    private Rect rectG; // = new Rect(100,30,150,80);
+    private Rect rectB; // = new Rect(170,30,220,80);
     private Rect srcBitmapRect;
     private Bitmap bitmapBulb;
 
@@ -66,7 +61,7 @@ public class DemoView extends View {
     public void init() {
 
         bitmapBulb = BitmapFactory.decodeResource(getResources(), R.drawable.bulb);
-        srcBitmapRect = new Rect(0,0,bitmapBulb.getWidth()-1, bitmapBulb.getHeight()-1);
+        srcBitmapRect = new Rect(0,0,bitmapBulb.getWidth()-1, bitmapBulb.getHeight() - 1);
 
         paintR.setColor(Color.argb(255, 255, 0, 0));
         paintG.setColor(Color.argb(255, 0, 255, 0));
@@ -77,7 +72,7 @@ public class DemoView extends View {
      * Update visualizer.
      * @param bulbs the bulbs colors
      */
-    public void updateVisualizer(int [] bulbs) {
+    public void updateVisualizer(int[] bulbs) {
         if (bulbs.length > 2) {
             this.r = bulbs[0];
             this.g = bulbs[1];
@@ -102,7 +97,7 @@ public class DemoView extends View {
 
         this.canvas = canvas;
 
-        int width = (int) (bitmapBulb.getWidth() / ((float)bitmapBulb.getHeight() / getHeight()));
+        int width = (int) (bitmapBulb.getWidth() / ((float) bitmapBulb.getHeight() / getHeight()));
         int height = getHeight();
 
         rectR = new Rect(0, width / 3, width, height - 1);
