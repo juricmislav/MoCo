@@ -101,7 +101,7 @@ public class AudioManager {
      */
     private AudioManager() {
         this.listener = null;
-        detector = new BeatDetector(samplingRate, blockSize, blockSize * 2);
+        detector = new BeatDetector(samplingRate, blockSize);
     }
 
     /**

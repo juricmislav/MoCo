@@ -61,7 +61,7 @@ public class BarGraphRenderer {
         int limit = data.length / divisions;
         int width = rect.width();
 
-        for (int i = 0; i < limit; i++) {
+        for (int i = 0; i < limit-1; i+=2) {
             double rfk = data[divisions * i];
             double ifk = data[divisions * i + 1];
             double magnitude = (rfk * rfk + ifk * ifk);

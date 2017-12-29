@@ -127,6 +127,7 @@ public class AudioRecorder extends AsyncTask<Void, double[], Void> {
             audioRecord.startRecording();
 
             while (started) {
+                // Read 43 times per second with blockSize = 512, sampleRate = 22050
                 int bufferReadResult = audioRecord.read(buffer, 0, blockSize);
 
                 // Short to Double

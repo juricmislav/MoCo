@@ -49,7 +49,7 @@ public class BeatDetector {
     private ArrayList<BEAT_TYPE> beats = new ArrayList<BEAT_TYPE>();
 
     private int samplingRate = -1;
-    private int bufferSize = -1;
+    private int historySize = -1;
     private int fftSize = -1;
     private int historyPos = 0;
     private int divisions = 2;
@@ -65,18 +65,17 @@ public class BeatDetector {
      * Default constructor.
      * @param samplingRate of the recorded data.
      * @param fftSize of the recorded data.
-     * @param bufferSize for the energy history.
      */
-    public BeatDetector(int samplingRate, int fftSize, int bufferSize) {
+    public BeatDetector(int samplingRate, int fftSize) {
         this.listener = null;
         this.samplingRate = samplingRate;
-        this.bufferSize = bufferSize;
+        this.historySize = samplingRate / fftSize;
         this.fftSize = fftSize / divisions;
         this.fftSubBands = new float[fftSubBandsCount];
         this.fftVariance = new float[fftSubBandsCount];
         this.beatValues = new float[fftSubBandsCount];
         this.averageEnergy = new float[fftSubBandsCount];
-        this.energyHistory = new float[fftSubBandsCount][samplingRate / bufferSize];
+        this.energyHistory = new float[fftSubBandsCount][historySize];
     }
 
     /**
@@ -110,7 +109,7 @@ public class BeatDetector {
         }
 
         for (int i = 0; i < fftSubBandsCount; i++) {
-            for (int i2 = 0; i2 < samplingRate / bufferSize; i2++) {
+            for (int i2 = 0; i2 < historySize; i2++) {
                 energyHistory[i][i2] = 0;
             }
         }
@@ -293,12 +292,12 @@ public class BeatDetector {
 
         for (int i = 0; i < fftSubBandsCount; i++) {
             averageEnergy[i] = 0;
-            for(int h = 0; h < samplingRate / bufferSize; h++) {
+            for(int h = 0; h < historySize; h++) {
 
                 averageEnergy[i] += energyHistory[i][h];
             }
 
-            averageEnergy[i] /= ((float) samplingRate / bufferSize);
+            averageEnergy[i] /= historySize;
         }
 
         for (int i = 0; i < fftSubBandsCount; i++) {
@@ -306,7 +305,7 @@ public class BeatDetector {
             energyHistory[i][historyPos] = fftSubBands[i];
         }
 
-        historyPos = (historyPos + 1) % (samplingRate / bufferSize);
+        historyPos = (historyPos + 1) % historySize;
     }
 
     /**

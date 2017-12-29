@@ -98,12 +98,12 @@ public class LEDRenderer {
     /**
      * Possible colors for all modes.
      */
-    private final int [][] allColors = {{Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW},  // DEFAULT / AUTOMATICAL
-                                    {Color.RED},    //POP
-                                    {Color.YELLOW}, // RAP
-                                    {Color.MAGENTA},    // ROCK
-                                    {Color.BLUE},   // DANCE
-                                    {Color.CYAN}};  // ELECTRO
+    private final int [][] allColors = {{Color.parseColor("#C40D00"), Color.parseColor("#BAA702"), Color.parseColor("#0078C4"), Color.parseColor("#00AD1D")},  // DEFAULT / AUTOMATICAL
+                                    {Color.parseColor("#C40D00"), Color.parseColor("#BAA702"), Color.parseColor("#0078C4"), Color.parseColor("#00AD1D")},    //POP
+                                    {Color.parseColor("#BA9F02"), Color.parseColor("C41C0A"), Color.parseColor("#AAAAAA")}, // RAP
+                                    {Color.parseColor("#BA9C02"), Color.parseColor("#C48C0A"), Color.parseColor("#C44D0A"), Color.parseColor("#BA2509")},    // ROCK
+                                    {Color.parseColor("#BA0276"), Color.parseColor("#04B1BA"), Color.parseColor("#0A59C4")},   // DANCE
+                                    {Color.parseColor("#0039AD"), Color.parseColor("#8C03BA"), Color.parseColor("#0AAAC4"), Color.parseColor("#04BA5A")}};  // ELECTRO
 
     /**
      * Different interval for all modes
