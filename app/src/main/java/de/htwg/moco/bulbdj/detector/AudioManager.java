@@ -216,7 +216,9 @@ public class AudioManager {
      */
     public void stop() {
         running = false;
-        audioRecorder.stop();
-        listener.onStop();
+        if (audioRecorder != null)
+            audioRecorder.stop();
+        if (listener != null)
+            listener.onStop();
     }
 }

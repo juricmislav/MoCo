@@ -8,6 +8,8 @@ import java.util.ArrayList;
  * separate the frequency in some divisions.
  * Kick, Snare and Hat have their own frequency range.
  *
+ * The main idea is from Frédéric Patin (https://www.gamedev.net/articles/programming/math-and-physics/beat-detection-algorithms-r1952)
+ * and from this project: https://github.com/darrenmothersele/ofxBeat
  *
  * @author Daniel Steidinger
  * @version 1.0
