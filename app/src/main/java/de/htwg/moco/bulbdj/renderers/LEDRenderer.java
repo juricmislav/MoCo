@@ -53,7 +53,7 @@ public class LEDRenderer {
     /**
      * The delay of the updates.
      */
-    private int delay = 25; // In milliseconds
+    private int delay = 100; // In milliseconds
 
     /**
      * Number of bulbs to display. Default is 3.
@@ -100,7 +100,7 @@ public class LEDRenderer {
      */
     private final int [][] allColors = {{Color.parseColor("#C40D00"), Color.parseColor("#BAA702"), Color.parseColor("#0078C4"), Color.parseColor("#00AD1D")},  // DEFAULT / AUTOMATICAL
                                     {Color.parseColor("#C40D00"), Color.parseColor("#BAA702"), Color.parseColor("#0078C4"), Color.parseColor("#00AD1D")},    //POP
-                                    {Color.parseColor("#BA9F02"), Color.parseColor("C41C0A"), Color.parseColor("#AAAAAA")}, // RAP
+                                    {Color.parseColor("#BA9F02"), Color.parseColor("#C41C0A"), Color.parseColor("#AAAAAA")}, // RAP
                                     {Color.parseColor("#BA9C02"), Color.parseColor("#C48C0A"), Color.parseColor("#C44D0A"), Color.parseColor("#BA2509")},    // ROCK
                                     {Color.parseColor("#BA0276"), Color.parseColor("#04B1BA"), Color.parseColor("#0A59C4")},   // DANCE
                                     {Color.parseColor("#0039AD"), Color.parseColor("#8C03BA"), Color.parseColor("#0AAAC4"), Color.parseColor("#04BA5A")}};  // ELECTRO
@@ -164,11 +164,11 @@ public class LEDRenderer {
         bulbs = calcColors(bulbs);
 
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
-            bulbs[0] = Color.argb(0, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
+            bulbs[0] = Color.argb(0, 0, 0, 0);
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-            bulbs[1] = Color.argb(0, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1]));
+            bulbs[1] = Color.argb(0, 0, 0, 0);
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.HAT))
-            bulbs[2] = Color.argb(0, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]));
+            bulbs[2] = Color.argb(0, 0, 0, 0);
 
 
         if (beats != null) {
@@ -241,13 +241,19 @@ public class LEDRenderer {
 
         if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime && !Arrays.equals(bulbs, this.bulbs)) {
             this.bulbs = bulbs;
-            listener.onUpdate(bulbs);
+
             lastUpdateTime = System.currentTimeMillis();
             String s = "";
             for (int color: bulbs) {
-                s += String.valueOf(color) + " ";
+                if (Color.alpha(color) <= 0)
+                    s +=  "0 ";
+                else
+                    s +=  String.valueOf(color) + " ";
             }
             Log.d("LED update", s);
+
+            // Call onUpdate
+            listener.onUpdate(bulbs);
         }
     }
 

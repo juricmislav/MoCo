@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -167,15 +168,20 @@ public class MainActivity extends AppCompatActivity {
                         // Color conversion
                         float[] hsv = new float[3];
                         Color.colorToHSV(color, hsv);
-                        int hue = (int)hsv[0] * 182;
-                        int sat = (int)hsv[1] * 254;
-                        int val = (int)hsv[2] * 254;
+                        int hue = (int)(hsv[0] * 182);
+                        int sat = (int)(hsv[1] * 254);
+                        int val = Color.alpha(color);//(int)(hsv[2] * 254);
 
                         PHLight light = allLights.get(i);
                         PHLightState lightState = new PHLightState();
-                        lightState.setHue(hue);
-                        lightState.setSaturation(sat);
-                        lightState.setBrightness(val);
+                        if (val <= 0)
+                            lightState.setOn(false);
+                        else if (!lightState.isOn()) {
+                            lightState.setOn(true);
+                            lightState.setHue(hue);
+                            lightState.setSaturation(sat);
+                            lightState.setBrightness(val);
+                        }
                         bridge.updateLightState(light, lightState);
                     }
                 }
