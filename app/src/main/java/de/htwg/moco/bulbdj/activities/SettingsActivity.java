@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity {
     @OnClick(R.id.disconnect)
     void onClickDisconnect() {
         BridgeController.getInstance().terminate();
-        Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
         refreshButtonStatus();
     }
 

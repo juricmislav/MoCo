@@ -31,6 +31,7 @@ import com.philips.lighting.model.PHLightState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -51,7 +52,7 @@ import de.htwg.moco.bulbdj.views.VisualizerView;
  * <p>Setup of connection to the bridge
  * <p>Listening to the surrounding sound and tweeting the lights depending on the rhythm
  * and user preferences.
- *
+ * <p>
  * ...TO DO...
  *
  * @author Mislav Jurić
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        BridgeController.setContext(this);
+        BridgeController.setContext(this.getApplicationContext());
         BridgeController.getInstance().registerPhsdkListener(phsdkListener);
 
         if (BridgeController.getInstance().getConnectionProperties().isAutoStart() &&
@@ -147,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
         ledRenderer.setLEDRendererListener(new LEDRenderer.LEDRendererListener() {
 
             @Override
-            public void onUpdate(int [] bulbs) {
+            public void onUpdate(int[] bulbs) {
                 //if (!BridgeController.getInstance().isConnected()) {
-                    // Show LEDs on Display
-                    demoView.updateVisualizer(bulbs);
+                // Show LEDs on Display
+                demoView.updateVisualizer(bulbs);
                 //} else {
                 if (BridgeController.getInstance().isConnected()) {
                     // TODO test
@@ -159,29 +160,31 @@ public class MainActivity extends AppCompatActivity {
                     PHBridgeResourcesCache cache = bridge.getResourceCache();
 
                     List<PHLight> allLights = cache.getAllLights();
+                    if (allLights == null || allLights.isEmpty()) {
+                        return;
+                    }
 
                     int color = 0;
-                    for (int i = 0; i < allLights.size(); i++) {
-                        if (i < bulbs.length)
-                            color = bulbs[i];
+                    int MAX_HUE = 65535;
 
-                        // Color conversion
-                        float[] hsv = new float[3];
-                        Color.colorToHSV(color, hsv);
-                        int hue = (int)(hsv[0] * 182);
-                        int sat = (int)(hsv[1] * 254);
-                        int val = Color.alpha(color);//(int)(hsv[2] * 254);
+                    Random rand = new Random();
+                    int nextRandom = rand.nextInt(MAX_HUE);
+                    for (int i = 0; i < allLights.size(); i++) {
+//                        if (i < bulbs.length)
+//                            color = bulbs[i];
+//
+//                        // Color conversion
+//                        float[] hsv = new float[3];
+//                        Color.colorToHSV(color, hsv);
+//                        int hue = (int) (hsv[0] * 182);
+//                        int sat = (int) (hsv[1] * 254);
+//                        int val = Color.alpha(color);//(int)(hsv[2] * 254);
 
                         PHLight light = allLights.get(i);
                         PHLightState lightState = new PHLightState();
-                        if (val <= 0)
-                            lightState.setOn(false);
-                        else if (!lightState.isOn()) {
-                            lightState.setOn(true);
-                            lightState.setHue(hue);
-                            lightState.setSaturation(sat);
-                            lightState.setBrightness(val);
-                        }
+
+                        lightState.setHue(nextRandom);
+                        lightState.setBrightness(105);
                         bridge.updateLightState(light, lightState);
                     }
                 }
@@ -271,10 +274,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Start the recorder.
+     *
      * @param button
      */
-    private void startRecorder(Button button)
-    {
+    private void startRecorder(Button button) {
         button.setText(R.string.stop);
         startRecorder();
     }
@@ -282,17 +285,16 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Start the recorder.
      */
-    private void startRecorder()
-    {
+    private void startRecorder() {
         audioManager.start();
     }
 
     /**
      * Stop the recorder.
+     *
      * @param button
      */
-    private void stopRecorder(Button button)
-    {
+    private void stopRecorder(Button button) {
         button.setText(R.string.record);
         stopRecorder();
     }
@@ -300,8 +302,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Stop the recorder.
      */
-    private void stopRecorder()
-    {
+    private void stopRecorder() {
         audioManager.stop();
     }
 
@@ -394,10 +395,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == DISPLAY_RESULT_CODE && resultCode == SettingsActivity.STATUS_OK) {
-            Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
         }
         if (requestCode == DISPLAY_RESULT_CODE && resultCode == SettingsActivity.STATUS_DISCONNECTED) {
-            Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -424,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this.getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                 }
             });
             BridgeController.getInstance().setConnected(true);
