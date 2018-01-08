@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                ledRenderer.setModeAuto(i == 0);
                 ledRenderer.setMode(Modes.values()[i]);
 
                 int value = 100 - (int) ((audioManager.getSensitivity(Modes.values()[i]) - 1F) * 100F);

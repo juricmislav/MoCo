@@ -15,6 +15,7 @@
     <string name="max">Max</string>
     <string name="action_manual">Manual</string>
     <string name="action_adjust">Adjust</string>
+    <string name="beatDetection">Beat detection</string>
     <string-array name="modes_array">
         <item name="AUTOMATICAL">Automatical</item>
         <item name="POP">Pop</item>
@@ -22,5 +23,6 @@
         <item name="ROCK">Rock</item>
         <item name="DANCE">Dance</item>
         <item name="ELECTRO">Electro</item>
+        <item name="ROMANTIC">Romantic</item>
     </string-array>
 </resources>

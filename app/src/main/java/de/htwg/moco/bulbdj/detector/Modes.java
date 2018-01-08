@@ -9,5 +9,5 @@ import de.htwg.moco.bulbdj.R;
  * @version 1.0
  */
 public enum Modes {
-    AUTOMATICAL, POP, RAP, ROCK, DANCE, ELECTRO
+    AUTOMATICAL, POP, RAP, ROCK, DANCE, ELECTRO, ROMANTIC
 }

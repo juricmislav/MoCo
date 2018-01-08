@@ -142,6 +142,9 @@ public class AudioManager {
             case RAP:
                 sensitivity = 1.6F;
                 break;
+            case ROMANTIC:
+                sensitivity = 1.6F;
+                break;
             case POP:
             case AUTOMATICAL:
             default:

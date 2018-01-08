@@ -53,7 +53,12 @@ public class LEDRenderer {
     /**
      * The delay of the updates.
      */
-    private int delay = 100; // In milliseconds
+    private int delay = 200; // In milliseconds
+
+    /**
+     * Check mode delay
+     */
+    private int checkModeDelay = 15000; // In milliseconds
 
     /**
      * Number of bulbs to display. Default is 3.
@@ -64,6 +69,11 @@ public class LEDRenderer {
      * Value of the last updated time.
      */
     private long lastUpdateTime = 0;
+
+    /**
+     * Value of last checked automatical mode
+     */
+    private long lastModeChecked = 0;
 
     /**
      * Value of the last color change.
@@ -94,6 +104,16 @@ public class LEDRenderer {
      * Display mode
      */
     private int mode;
+
+    /**
+     * Counter of beats.
+     */
+    private int countBeats = 0;
+
+    /**
+     * Is the mode automatical.
+     */
+    private boolean autoMode;
 
     /**
      * Possible colors for all modes.
@@ -153,6 +173,15 @@ public class LEDRenderer {
                 modeI = 0;
         }
         this.mode = modeI;
+    }
+
+    /**
+     * Setter method.
+     *
+     * @param autoMode is true if the mode is automatically detected.
+     */
+    public void setModeAuto(boolean autoMode) {
+        this.autoMode = autoMode;
     }
 
     /**
@@ -243,6 +272,15 @@ public class LEDRenderer {
             this.bulbs = bulbs;
 
             lastUpdateTime = System.currentTimeMillis();
+
+            /*countBeats++;
+            if (autoMode && lastUpdateTime - checkModeDelay > lastModeChecked) {
+                lastModeChecked = lastUpdateTime;
+                changeMode();
+                countBeats = 0;
+            }*/
+
+            // Log
             String s = "";
             for (int color: bulbs) {
                 if (Color.alpha(color) <= 0)
@@ -255,6 +293,30 @@ public class LEDRenderer {
             // Call onUpdate
             listener.onUpdate(bulbs);
         }
+    }
+
+    /**
+     * Change the mode depending on beat counts.
+     */
+    private void changeMode() {
+        Modes mode = Modes.AUTOMATICAL;
+
+        if (countBeats > 0 && countBeats < 60) {
+            mode = Modes.ROMANTIC;
+        } else if (countBeats < 20) {
+            mode = Modes.RAP;
+        } else if (countBeats < 25) {
+            mode = Modes.ROCK;
+        } else if (countBeats < 30) {
+            mode = Modes.DANCE;
+        } else if (countBeats < 35) {
+            mode = Modes.POP;
+        } else if (countBeats < 40) {
+            mode = Modes.ELECTRO;
+        }
+
+        Log.d("Mode change", "Mode change to: " + mode.name() + " (detected " + countBeats + " beats)");
+        setMode(mode);
     }
 
     /**
