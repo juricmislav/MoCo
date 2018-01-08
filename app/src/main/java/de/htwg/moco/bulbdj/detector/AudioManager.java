@@ -1,5 +1,7 @@
 package de.htwg.moco.bulbdj.detector;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -27,7 +29,7 @@ public class AudioManager {
          * Beat was detected.
          * @param beats the detected beats
          */
-        void onBeatDetected(ArrayList<BeatDetector.BEAT_TYPE> beats);
+        void onBeatDetected(ArrayList<Object[]> beats);
 
         /**
          * FFT update.
@@ -191,7 +193,7 @@ public class AudioManager {
         });
         detector.setBeatDetectorListener(new BeatDetector.BeatDetectorListener() {
             @Override
-            public void onBeatDetected(ArrayList<BeatDetector.BEAT_TYPE> beats) {
+            public void onBeatDetected(ArrayList<Object[]> beats) {
                 if (listener != null)
                     listener.onBeatDetected(beats);
             }

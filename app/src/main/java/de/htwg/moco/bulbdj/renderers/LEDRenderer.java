@@ -186,11 +186,17 @@ public class LEDRenderer {
 
     /**
      * Renders the beats as colors output.
-     * @param beats the detected beats.
+     * @param beatsObjs the detected beats.
      */
-    public void updateBeats(ArrayList<BeatDetector.BEAT_TYPE> beats) {
+    public void updateBeats(ArrayList<Object[]> beatsObjs) {
         int [] bulbs = new int[bulbCount];
         bulbs = calcColors(bulbs);
+
+        ArrayList<BeatDetector.BEAT_TYPE> beats = new ArrayList<BeatDetector.BEAT_TYPE>();
+        for (Object[] beatsObj : beatsObjs) {
+            if (beatsObj != null && beatsObj.length > 0)
+                beats.add((BeatDetector.BEAT_TYPE) beatsObj[0]);
+        }
 
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
             bulbs[0] = Color.argb(0, 0, 0, 0);
@@ -201,14 +207,17 @@ public class LEDRenderer {
 
 
         if (beats != null) {
-            if (beats.contains(BeatDetector.BEAT_TYPE.KICK))
-                bulbs[0] = Color.argb(255, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
-            if (beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-                bulbs[1] = Color.argb(255, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1]));
-            if (beats.contains(BeatDetector.BEAT_TYPE.HAT))
-                bulbs[2] = Color.argb(255, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]));
-            if (beats.contains(BeatDetector.BEAT_TYPE.MANUAL))
-                bulbs[0] = Color.argb(255, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
+            for (Object[] beatObj : beatsObjs) {
+                int energy = (int) (((float) beatObj[1]) * 110) + 80;
+                energy = Math.min(255, energy);
+                energy = Math.max(0, energy);
+                if (beatObj[0].equals(BeatDetector.BEAT_TYPE.KICK))
+                    bulbs[0] = Color.argb(energy, Color.red(bulbs[0]), Color.green(bulbs[0]), Color.blue(bulbs[0]));
+                if (beatObj[0].equals(BeatDetector.BEAT_TYPE.SNARE))
+                    bulbs[1] = Color.argb(energy, Color.red(bulbs[1]), Color.green(bulbs[1]), Color.blue(bulbs[1]));
+                if (beatObj[0].equals(BeatDetector.BEAT_TYPE.HAT))
+                    bulbs[2] = Color.argb(energy, Color.red(bulbs[2]), Color.green(bulbs[2]), Color.blue(bulbs[2]));
+            }
         }
 
         doUpdate(bulbs);

@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         audioManager.setAudioMangerListener(new AudioManager.AudioManagerListener() {
             @Override
-            public void onBeatDetected(ArrayList<BeatDetector.BEAT_TYPE> beats) {
+            public void onBeatDetected(ArrayList<Object[]> beats) {
                 if (audioManager.isDetectorOn())
                     ledRenderer.updateBeats(beats);
             }

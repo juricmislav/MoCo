@@ -28,7 +28,7 @@ public class BeatDetector {
          * Beats were detected.
          * @param beats that were detected
          */
-        void onBeatDetected(ArrayList<BEAT_TYPE> beats);
+        void onBeatDetected(ArrayList<Object[]> beats);
     }
 
     /**
@@ -48,7 +48,8 @@ public class BeatDetector {
     private float[] beatValues = null;
     private float[][] energyHistory = null;
     private float[] averageEnergy = null;
-    private ArrayList<BEAT_TYPE> beats = new ArrayList<BEAT_TYPE>();
+    private ArrayList<Object[]> beats = new ArrayList<Object[]>();
+    private float lastBeatEnergy = 0;
 
     private int samplingRate = -1;
     private int historySize = -1;
@@ -92,7 +93,7 @@ public class BeatDetector {
      * Beats were detected.
      * @param beats
      */
-    private void beatDetected(ArrayList<BEAT_TYPE> beats) {
+    private void beatDetected(ArrayList<Object[]> beats) {
         if (listener != null) {
             listener.onBeatDetected(beats);
         }
@@ -191,19 +192,19 @@ public class BeatDetector {
      * Detect beats.
      * @return type of beats.
      */
-    private ArrayList<BEAT_TYPE> detectBeat() {
+    private ArrayList<Object[]> detectBeat() {
         beats.clear();
 
         if (manualLow < 0 || manualHigh < 0) {
             if (isKick()) {
-                beats.add(BEAT_TYPE.KICK);
+                beats.add(new Object[] {BEAT_TYPE.KICK, lastBeatEnergy});
             } else if (isSnare()) {
-                beats.add(BEAT_TYPE.SNARE);
+                beats.add(new Object[] {BEAT_TYPE.SNARE, lastBeatEnergy});
             } else if (isHat()) {
-                beats.add(BEAT_TYPE.HAT);
+                beats.add(new Object[] {BEAT_TYPE.HAT, lastBeatEnergy});
             }
         } else if (isBeatRange(manualLow, manualHigh)) {
-            beats.add(BEAT_TYPE.MANUAL);
+            beats.add(new Object[] {BEAT_TYPE.MANUAL, lastBeatEnergy});
         }
 
         return beats;
@@ -249,15 +250,20 @@ public class BeatDetector {
     private boolean isBeatRange(int low, int high) {
         int thresholdBeatCounts = (high-low) / 3;
 
+        lastBeatEnergy = 0;
         int beatCounts = 0;
         for(int i = low; i <= high; i++) {
-            if (isBeat(i))
+            if (isBeat(i)) {
                 beatCounts++;
+                lastBeatEnergy += fftSubBands[i];
+            }
         }
 
         boolean beatDetected = (beatCounts > thresholdBeatCounts && ((System.currentTimeMillis() - lastBeat) > timeToWait));
-        if (beatDetected)
+        if (beatDetected) {
             lastBeat = System.currentTimeMillis();
+            lastBeatEnergy /= high;
+        }
         return beatDetected;
     }
 
