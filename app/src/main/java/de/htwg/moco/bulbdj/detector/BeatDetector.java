@@ -1,5 +1,7 @@
 package de.htwg.moco.bulbdj.detector;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -198,15 +200,17 @@ public class BeatDetector {
         if (manualLow < 0 || manualHigh < 0) {
             if (isKick()) {
                 beats.add(new Object[] {BEAT_TYPE.KICK, lastBeatEnergy});
-            } else if (isSnare()) {
+            } if (isSnare()) {
                 beats.add(new Object[] {BEAT_TYPE.SNARE, lastBeatEnergy});
-            } else if (isHat()) {
+            } if (isHat()) {
                 beats.add(new Object[] {BEAT_TYPE.HAT, lastBeatEnergy});
             }
         } else if (isBeatRange(manualLow, manualHigh)) {
             beats.add(new Object[] {BEAT_TYPE.MANUAL, lastBeatEnergy});
         }
 
+        if (beats.size() > 1)
+            Log.d("test", "WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOW");
         return beats;
     }
 
@@ -262,7 +266,7 @@ public class BeatDetector {
         boolean beatDetected = (beatCounts > thresholdBeatCounts && ((System.currentTimeMillis() - lastBeat) > timeToWait));
         if (beatDetected) {
             lastBeat = System.currentTimeMillis();
-            lastBeatEnergy /= high;
+            lastBeatEnergy /= high+1 - low;
         }
         return beatDetected;
     }

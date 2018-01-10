@@ -16,6 +16,7 @@
     <string name="action_manual">Manual</string>
     <string name="action_adjust">Adjust</string>
     <string name="beatDetection">Beat detection</string>
+    <string name="maxFPS">Max Freq. (ms):</string>
     <string-array name="modes_array">
         <item name="AUTOMATICAL">Automatical</item>
         <item name="POP">Pop</item>

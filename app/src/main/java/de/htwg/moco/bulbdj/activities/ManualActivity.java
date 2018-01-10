@@ -14,6 +14,7 @@ import android.widget.TextView;
 import de.htwg.moco.bulbdj.R;
 import de.htwg.moco.bulbdj.detector.AudioManager;
 import de.htwg.moco.bulbdj.detector.Types;
+import de.htwg.moco.bulbdj.renderers.LEDRenderer;
 
 public class ManualActivity extends AppCompatActivity {
 
@@ -52,6 +53,30 @@ public class ManualActivity extends AppCompatActivity {
             }
         });
 
+        final TextView delayTest = (TextView) findViewById(R.id.delay);
+        final SeekBar delayBar = (SeekBar) findViewById(R.id.delayBar);
+        delayBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int delayValue = progress * 5 + 20;
+                delayTest.setText(String.valueOf(delayValue));
+                editor.putInt("delay", delayValue);
+                editor.commit();
+                LEDRenderer.getInstance().setDelay(delayValue);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        int delayValue = settings.getInt("delay", 50);
+        int processValue = (delayValue - 20) / 5;
+        delayBar.setProgress(processValue);
         sensitivityBar.setProgress(settings.getInt("sensitivity", 0));
         boolean isChecked = settings.getInt("mode", 0) != 1;
         modeSwitch.setChecked(isChecked);

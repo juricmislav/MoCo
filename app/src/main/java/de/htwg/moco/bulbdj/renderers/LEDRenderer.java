@@ -51,9 +51,14 @@ public class LEDRenderer {
     }
 
     /**
+     * Instance of {@LEDRenderer} class.
+     */
+    private static LEDRenderer instance = null;
+
+    /**
      * The delay of the updates.
      */
-    private int delay = 200; // In milliseconds
+    private int delay = 50; // In milliseconds
 
     /**
      * Check mode delay
@@ -137,12 +142,29 @@ public class LEDRenderer {
     };
 
     /**
+     * Singleton instance of {@link LEDRenderer} class.
+     * @return instance of {@link LEDRenderer}
+     */
+    public static LEDRenderer getInstance() {
+        if (instance == null)
+            instance = new LEDRenderer();
+        return instance;
+    }
+
+    /**
      * Default constructor.
      */
-    public LEDRenderer() {
+    private LEDRenderer() {
         this.listener = null;
         bulbs = new int[bulbCount];
         lastColors = new int[bulbCount];
+    }
+
+    public void setDelay(int delay) {
+        if (delay >= 20 && delay <= 5000)
+            this.delay = delay;
+        else
+            throw new RuntimeException("Delay is out of range.");
     }
 
     /**

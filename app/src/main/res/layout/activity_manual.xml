@@ -32,6 +32,46 @@
             tools:layout_editor_absoluteY="8dp">
 
             <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/delayBar"
+                android:layout_alignStart="@+id/modeSwitch"
+                android:textColor="@color/textColorSecondary"
+                android:text="@string/maxFPS" />
+
+            <TextView
+                android:id="@+id/delay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView"
+                android:layout_alignEnd="@+id/modeSwitch"
+                android:layout_toEndOf="@+id/textView"
+                android:textAlignment="center"
+                android:textColor="@color/textColorSecondary"
+                android:text="50" />
+
+            <SeekBar
+                android:id="@+id/delayBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                android:layout_toEndOf="@+id/delay" />
+
+            <Switch
+                android:id="@+id/modeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/textViewSensitivity"
+                android:layout_below="@+id/textView"
+                android:layout_marginTop="19dp"
+                android:checked="true"
+                android:text="@string/beatDetection"
+                android:textColor="@color/textColorSecondary" />
+
+            <TextView
                 android:id="@+id/textViewSensitivity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -39,8 +79,8 @@
                 android:layout_below="@+id/modeSwitch"
                 android:layout_marginStart="19dp"
                 android:layout_marginTop="16dp"
-                android:textColor="@color/textColorSecondary"
-                android:text="@string/sensitivity" />
+                android:text="@string/sensitivity"
+                android:textColor="@color/textColorSecondary" />
 
             <SeekBar
                 android:id="@+id/sensitivityBar"
@@ -49,17 +89,6 @@
                 android:layout_alignBottom="@+id/textViewSensitivity"
                 android:layout_marginStart="21dp"
                 android:layout_toEndOf="@+id/textViewSensitivity" />
-
-            <Switch
-                android:id="@+id/modeSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignStart="@+id/textViewSensitivity"
-                android:layout_marginTop="30dp"
-                android:checked="true"
-                android:text="@string/beatDetection"
-                android:textColor="@color/textColorSecondary" />
 
         </RelativeLayout>
 

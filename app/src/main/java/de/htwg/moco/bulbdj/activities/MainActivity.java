@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private VisualizerView visualizerView;
     private DemoView demoView;
 
+    private Button recordButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,11 +94,11 @@ public class MainActivity extends AppCompatActivity {
             autoConnect();
         }
 
-        Button recordButton = (Button) findViewById(R.id.start_stop_btn);
+        recordButton = (Button) findViewById(R.id.start_stop_btn);
         visualizerView = (VisualizerView) findViewById(R.id.visualizerView);
         visualizerView.setRadius(recordButton.getWidth());
         demoView = (DemoView) findViewById(R.id.demoView);
-        ledRenderer = new LEDRenderer();
+        ledRenderer = LEDRenderer.getInstance();
         audioManager = AudioManager.getInstance();
 
         Spinner modeSpinner = (Spinner) findViewById(R.id.modeSpinner);
@@ -227,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     startRecorder();
 
                 } else {
-                    stopRecorder();
+                    stopRecorder(recordButton);
                 }
                 return;
             }
