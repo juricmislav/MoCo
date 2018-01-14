@@ -111,7 +111,7 @@ public class SetupActivity extends AppCompatActivity {
      * Method initializes activity's toolbar.
      */
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.setup_toolbar);
+        Toolbar toolbar = findViewById(R.id.setup_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

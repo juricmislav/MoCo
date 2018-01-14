@@ -32,14 +32,12 @@
             class="de.htwg.moco.bulbdj.views.DemoView"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:layout_centerHorizontal="true"
             android:visibility="invisible" />
 
         <Spinner
             android:id="@+id/mode_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/textColorSecondary"
             android:spinnerMode="dropdown" />
@@ -52,9 +50,9 @@
             <view
                 android:id="@+id/visualizer_view"
                 class="de.htwg.moco.bulbdj.views.VisualizerView"
-                android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
 
             <Button
                 android:id="@+id/start_stop_btn"

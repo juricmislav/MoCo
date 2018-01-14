@@ -3,9 +3,8 @@
     android:id="@+id/listTextView"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    android:gravity="center_vertical"
     android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
     android:textAppearance="?android:attr/textAppearanceListItem"
-    android:gravity="center_vertical"
     android:textColor="@color/textColorSecondary"
-    android:textSize="@dimen/text_size_medium"
-    />
+    android:textSize="@dimen/text_size_medium" />

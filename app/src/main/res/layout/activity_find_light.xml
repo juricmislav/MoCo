@@ -6,7 +6,19 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     android:orientation="vertical"
-    tools:context="de.htwg.moco.bulbdj.activities.SettingsActivity">
+    tools:context="de.htwg.moco.bulbdj.activities.FindLightActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/find_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <EditText
         android:id="@+id/input"
@@ -14,20 +26,20 @@
         android:layout_height="@dimen/layout_height_large"
         android:layout_gravity="center"
         android:layout_margin="@dimen/text_size_medium"
-        android:textColor="@color/textColorSecondary"
-        android:maxLines="1"
-        android:inputType="text"
         android:hint="@string/input_hint"
-        android:textAlignment="center" />
+        android:inputType="text"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textColor="@color/textColorSecondary" />
 
     <Button
         android:id="@+id/find"
         android:layout_width="match_parent"
         android:layout_height="@dimen/layout_height_large"
         android:layout_gravity="left"
+        android:layout_margin="@dimen/text_size_small"
         android:background="@color/colorBackground"
         android:text="@string/search"
-        android:layout_margin="@dimen/text_size_small"
         android:textColor="@color/buttonTextColor"
         android:textSize="@dimen/text_size_medium" />
 
@@ -36,6 +48,6 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_size_small"/>
+        android:layout_margin="@dimen/text_size_small" />
 
 </LinearLayout>

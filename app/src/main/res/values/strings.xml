@@ -5,6 +5,7 @@
     <string name="disconnect">Disconnect</string>
     <string name="input_hint">Light\'s serial number</string>
     <string name="search">Search</string>
+    <string name="find">Find Light</string>
     <string name="setup">Setup</string>
     <string name="search_bridges">Search bridges</string>
     <string name="settings">Settings</string>

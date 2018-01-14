@@ -75,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
      * Method initializes activity's toolbar.
      */
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.settings_toolbar);
+        Toolbar toolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

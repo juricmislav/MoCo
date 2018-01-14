@@ -24,31 +24,31 @@
         android:id="@+id/auto_connect"
         android:layout_width="match_parent"
         android:layout_height="@dimen/layout_height_medium"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
+        android:layout_margin="@dimen/text_size_small"
         android:background="@color/colorBackground"
         android:text="@string/auto_connect_start"
-        android:textSize="@dimen/text_size_large"
-        android:layout_margin="@dimen/text_size_small"
-        android:textColor="@color/buttonTextColor"/>
+        android:textColor="@color/buttonTextColor"
+        android:textSize="@dimen/text_size_large" />
 
     <Button
         android:id="@+id/disconnect"
         android:layout_width="match_parent"
         android:layout_height="@dimen/layout_height_large"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:background="@color/colorBackground"
         android:text="@string/disconnect"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="@color/buttonTextColor"/>
+        android:textColor="@color/buttonTextColor"
+        android:textSize="@dimen/text_size_medium" />
 
     <Button
         android:id="@+id/setup"
         android:layout_width="match_parent"
         android:layout_height="@dimen/layout_height_large"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:background="@color/colorBackground"
         android:text="@string/setup"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="@color/buttonTextColor" />
+        android:textColor="@color/buttonTextColor"
+        android:textSize="@dimen/text_size_medium" />
 
 </LinearLayout>

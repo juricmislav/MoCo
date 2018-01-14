@@ -33,12 +33,6 @@ import de.htwg.moco.bulbdj.renderers.LEDRenderer;
  */
 public class AdjustActivity extends AppCompatActivity {
     /**
-     * Toolbar reference.
-     */
-    @BindView(R.id.adjust_toolbar)
-    Toolbar toolbar;
-
-    /**
      * Sensitivity text view reference.
      */
     @BindView(R.id.text_view_sensitivity)
@@ -79,10 +73,7 @@ public class AdjustActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_adjust);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle(R.string.action_adjust);
+        initToolbar();
 
         initSensitivityBar();
 
@@ -91,6 +82,17 @@ public class AdjustActivity extends AppCompatActivity {
         initModeSwitch();
 
         initBrightnessBar();
+    }
+
+    /**
+     * Method initializes activity's toolbar.
+     */
+    private void initToolbar() {
+        Toolbar toolbar = findViewById(R.id.adjust_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle(R.string.action_adjust);
     }
 
     /**
@@ -191,10 +193,7 @@ public class AdjustActivity extends AppCompatActivity {
         brightnessBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int brightnessValue = (int)(i * 2.54);
-                AppProperties.getInstance().setBrightness(brightnessValue);
-                AppProperties.getInstance().saveProperties();
-                setLightBrightness(brightnessValue);
+
             }
 
             @Override
@@ -204,7 +203,10 @@ public class AdjustActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                int brightnessValue = (int)(seekBar.getProgress() * 2.54);
+                AppProperties.getInstance().setBrightness(brightnessValue);
+                AppProperties.getInstance().saveProperties();
+                setLightBrightness(brightnessValue);
             }
         });
     }
