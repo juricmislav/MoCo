@@ -76,7 +76,7 @@ public class LEDRenderer {
     private long lastUpdateTime = 0;
 
     /**
-     * Value of last checked automatical mode
+     * Value of last checked automatic mode
      */
     private long lastModeChecked = 0;
 
@@ -116,7 +116,7 @@ public class LEDRenderer {
     private int countBeats = 0;
 
     /**
-     * Is the mode automatical.
+     * Is the mode automatic.
      */
     private boolean autoMode;
 
@@ -190,7 +190,7 @@ public class LEDRenderer {
             case ELECTRO:
                 modeI = 5;
                 break;
-            case AUTOMATICAL:
+            case AUTOMATIC:
             default:
                 modeI = 0;
         }
@@ -330,7 +330,7 @@ public class LEDRenderer {
      * Change the mode depending on beat counts.
      */
     private void changeMode() {
-        Modes mode = Modes.AUTOMATICAL;
+        Modes mode = Modes.AUTOMATIC;
 
         if (countBeats > 0 && countBeats < 60) {
             mode = Modes.ROMANTIC;

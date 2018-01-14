@@ -2,7 +2,10 @@ package de.htwg.moco.bulbdj.bridge;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.philips.lighting.annotations.Bridge;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
@@ -11,6 +14,7 @@ import com.philips.lighting.model.PHLightState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import de.htwg.moco.bulbdj.data.ConnectionProperties;
 
@@ -49,25 +53,30 @@ public class BridgeController {
     private boolean connected;
 
     /**
-     * Maximum value of hue.
+     * Maximum hue value.
      */
     private final float MAX_HUE = 65534;
 
     /**
-     * Maximum value of saturation.
+     * Maximum saturation value.
      */
     private final float MAX_SATURATION = 254;
 
     /**
-     * Maximum value of brightness.
+     * Maximum brightness value.
      */
-    private final int MAX_BRIGTHNESS = 254;
+    private final float MAX_BRIGTHNESS = 254;
 
     /**
      * Default constructor. Private because of singleton pattern.
      */
     private BridgeController() {
-        pHHueSDK = PHHueSDK.getInstance();
+        try {
+            pHHueSDK = PHHueSDK.getInstance();
+
+        } catch (Exception e) {
+        }
+        if (context == null) return;
         connectionProperties = new ConnectionProperties(context);
     }
 
@@ -87,8 +96,12 @@ public class BridgeController {
      * Method terminates connection to the bridge.
      */
     public void terminate() {
-        pHHueSDK.stopPushlinkAuthentication();
-        pHHueSDK.destroySDK();
+        try {
+            pHHueSDK.stopPushlinkAuthentication();
+            pHHueSDK.destroySDK();
+        } catch (Exception e) {
+
+        }
         bridgeController = null;
         connected = false;
     }
@@ -138,7 +151,11 @@ public class BridgeController {
      * @return true if property values are defined, otherwise false
      */
     public boolean propertiesDefined() {
-        return !(connectionProperties.getIpAddress() == null || connectionProperties.getUserName() == null);
+
+        return (connectionProperties != null &&
+                connectionProperties.getIpAddress() != null &&
+                connectionProperties.getUserName() != null &&
+                connectionProperties.getMacAddress() != null);
     }
 
     /**
@@ -146,32 +163,35 @@ public class BridgeController {
      * @param phsdkListener listener that is registered
      */
     public void registerPhsdkListener(PHSDKListener phsdkListener) {
-        bridgeController.pHHueSDK.getNotificationManager().registerSDKListener(phsdkListener);
-    }
-
-    /**
-     * Getter method.
-     * @return number of light bulbs connected to bridge
-     */
-    public int getLightCount() {
-        if (bridgeController == null) return 0;
         try {
-            PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-            return bridge.getResourceCache().getAllLights().size();
+            bridgeController.pHHueSDK.getNotificationManager().registerSDKListener(phsdkListener);
         } catch (Exception e) {
-            return 0;
         }
     }
 
     /**
      * Getter method.
-     * @return light bulb's identifiers
+     *
+     * @return count of lights connected to selected bridge
      */
-    public List<String> getLightIdentifiers() {
-        if (bridgeController == null) return null;
+    public boolean isLightsEmpty() {
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null) return true;
         try {
-            PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-            return new ArrayList<>(bridge.getResourceCache().getLights().keySet());
+            return pHHueSDK.getSelectedBridge().getResourceCache().getAllLights().isEmpty();
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    /**
+     * Getter method.
+     *
+     * @return list of all lights connected to selected bridge
+     */
+    public List<String> getAllLights() {
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null) return null;
+        try {
+            return new ArrayList<>(pHHueSDK.getSelectedBridge().getResourceCache().getLights().keySet());
         } catch (Exception e) {
             return null;
         }
@@ -179,70 +199,63 @@ public class BridgeController {
 
     /**
      * Getter method.
-     * @param idn identifier of light bulb
-     * @return light bulb with provided identifier
+     *
+     * @param idn light bulbs' identifier
+     * @return light bulb with given identifier if exists, otherwise <<code>null</code>
      */
+    @Nullable
     private PHLight getLight(String idn) {
-        if (bridgeController == null) return null;
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null) return null;
         try {
-            PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-            return bridge.getResourceCache().getLights().get(idn);
+            return pHHueSDK.getSelectedBridge().getResourceCache().getLights().get(idn);
         } catch (Exception e) {
             return null;
         }
     }
 
     /**
-     * Method sets the brightness of certain light bulb, defined by identifier.
-     * @param idn identifier of light bulb
-     * @param brightness value of brightness
+     * Method sets light bulb's color.
+     *
+     * @param idn light bulbs' identifier
+     * @param color value set for color
      */
-    public void setLightBrightness(String idn, int brightness) {
-        if (bridgeController == null ||idn == null) return;
-        try {
-            if (getLight(idn) == null) return;
-            PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-            PHLightState lightState = new PHLightState();
-            lightState.setBrightness(brightness > MAX_BRIGTHNESS ? MAX_BRIGTHNESS : brightness);
-            bridge.updateLightState(getLight(idn), lightState);
-        } catch (Exception e) {
-            return;
-        }
-    }
+    public void setLightColor(String idn, int color) {
+        PHLight light = getLight(idn);
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null || light == null) return;
 
-    /**
-     * Method sets the color of certain light bulb, defined by identifier.
-     * @param idn identifier of light bulb
-     * @param hue value of color
-     * @param saturation value of color
-     */
-    private void setLightColor(String idn, int hue, int saturation) {
-        if (bridgeController == null ||idn == null) return;
-        try {
-            if (getLight(idn) == null) return;
-            PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-            PHLightState lightState = new PHLightState();
-            lightState.setHue(hue);
-            lightState.setSaturation(saturation);
-            bridge.updateLightState(getLight(idn), lightState);
-        } catch (Exception e) {
-            return;
-        }
-    }
-
-    /**
-     * Method sets the color of certain light bulb, defined by identifier.
-     * @param idn identifier of light bulb
-     * @param color color to be set
-     */
-    public void satLightColor(String idn, int color) {
         float[] HSV = new float[3];
         Color.colorToHSV(color, HSV);
 
-        setLightColor(
-                idn,
-                Math.round(HSV[0] * MAX_HUE),
-                Math.round(HSV[0] * MAX_SATURATION)
-                );
+        PHLightState lightState = new PHLightState();
+
+        lightState.setHue(Math.round(HSV[0] / 360 * MAX_HUE));
+        lightState.setSaturation(Math.round(HSV[1] * MAX_SATURATION));
+        lightState.setTransitionTime(0);
+
+        try {
+            pHHueSDK.getSelectedBridge().updateLightState(light, lightState);
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * Method sets light bulb's brightness.
+     *
+     * @param idn light bulbs' identifier
+     * @param brightness value set for brightness
+     */
+    public void setLightBrightness(String idn, int brightness) {
+        PHLight light = getLight(idn);
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null || light == null ||
+                brightness < 0 || brightness > MAX_BRIGTHNESS) return;
+
+        PHLightState lightState = new PHLightState();
+        lightState.setBrightness(brightness);
+        lightState.setTransitionTime(0);
+
+        try {
+            pHHueSDK.getSelectedBridge().updateLightState(light, lightState);
+        } catch (Exception e) {
+        }
     }
 }

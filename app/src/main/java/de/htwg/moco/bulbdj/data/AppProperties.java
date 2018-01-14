@@ -11,33 +11,35 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
- * Class represents properties for app's connection to the bridge.
- * <p>Stores user's name, ip address and value of auto start flag.
+ * Class represents properties for application, designed as singleton.
+ * <p>Stores app's brightness settings.
  *
  * @author Mislav Jurić
  * @version 1.0
  */
-public class ConnectionProperties {
+public class AppProperties {
+
+    private static AppProperties appProperties = null;
 
     /**
      * Value of ip address.
      */
-    private String ipAddress;
+    private int brightness = 150;
 
     /**
-     * Value of ip mac address.
+     * Value of delay (beat frequency detection).
      */
-    private String macAddress;
+    private int delay = 200;
 
     /**
-     * Value of username.
+     * Value of delay (beat frequency detection).
      */
-    private String userName;
+    private int sensitivity = 40;
 
     /**
-     * Value of auto start flag.
+     * Flag for mode switch component
      */
-    private boolean autoStart;
+    private boolean modeSwitch = true;
 
     /**
      * Reference to context of main activity.
@@ -47,13 +49,20 @@ public class ConnectionProperties {
     /**
      * Name of property file.
      */
-    private String fileName = "Connection.properties";
+    private String fileName = "AppProp.properties";
 
     /**
-     * Default constructor. Sets properties' context.
+     * Default constructor.
+     */
+    public AppProperties() {
+    }
+
+    /**
+     * Setter method.
+     *
      * @param context sets value of context
      */
-    public ConnectionProperties(Context context) {
+    public void setContext(Context context) {
         this.context = context;
         if (fileExists()) {
             loadProperties();
@@ -61,67 +70,79 @@ public class ConnectionProperties {
     }
 
     /**
-     * Getter method.
-     * @return value of ip address
+     * Getter method for singleton type of class.
+     *
+     * @return singleton instance of class
      */
-    public String getIpAddress() {
-        return ipAddress;
+    public static AppProperties getInstance() {
+        if (appProperties == null) {
+            appProperties = new AppProperties();
+        }
+        return appProperties;
     }
 
     /**
      * Getter method.
-     * @return value of mac address
+     * @return value of brightness
      */
-    public String getMacAddress() {
-        return macAddress;
+    public int getBrightness() {
+        return brightness;
     }
 
     /**
      * Getter method.
-     * @return value of username
+     * @return value of delay
      */
-    public String getUserName() {
-        return userName;
+    public int getDelay() {
+        return delay;
     }
 
     /**
      * Getter method.
-     * @return value of auto start flag
+     * @return value of sensitivity
      */
-    public boolean isAutoStart() {
-        return autoStart;
+    public int getSensitivity() {
+        return sensitivity;
+    }
+
+    /**
+     * Getter method.
+     * @return value of mode switch component flag
+     */
+    public boolean isModeSwitch() {
+        return modeSwitch;
     }
 
     /**
      * Setter method.
-     * @param ipAddress sets value of ip address
+     * @param brightness sets value of brightness
      */
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setBrightness(int brightness) {
+        this.brightness = brightness;
     }
 
     /**
      * Setter method.
-     * @param macAddress sets value of mac address
+     * @param delay sets value of delay
      */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
     /**
      * Setter method.
-     * @param userName sets value of user name
+     * @param sensitivity sets value of sensitivity
      */
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setSensitivity(int sensitivity) {
+        this.sensitivity = sensitivity;
     }
 
     /**
      * Setter method.
-     * @param autoStart sets value of auto start flag
+     * @param modeSwitch sets value of mode switch flag
      */
-    public void setAutoStart(boolean autoStart) {
-        this.autoStart = autoStart;
+    public void setModeSwitch(boolean modeSwitch) {
+        this.modeSwitch = modeSwitch;
     }
 
     /**
@@ -131,30 +152,30 @@ public class ConnectionProperties {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(context.openFileInput(fileName), "UTF-8"))) {
             String line;
             while ((line = in.readLine()) != null) {
-                if (line.startsWith("ip_address") && line.contains("=")) {
+                if (line.startsWith("brightness") && line.contains("=")) {
                     String[] pairs = line.split("=");
                     if (pairs.length != 2) continue;
-                    ipAddress = pairs[1];
+                    brightness = Integer.valueOf(pairs[1]);
                 }
-                if (line.startsWith("mac_address") && line.contains("=")) {
+                if (line.startsWith("delay") && line.contains("=")) {
                     String[] pairs = line.split("=");
                     if (pairs.length != 2) continue;
-                    macAddress = pairs[1];
+                    delay = Integer.valueOf(pairs[1]);
                 }
-                if (line.startsWith("user_name") && line.contains("=")) {
+                if (line.startsWith("sensitivity") && line.contains("=")) {
                     String[] pairs = line.split("=");
                     if (pairs.length != 2) continue;
-                    userName = pairs[1];
+                    sensitivity = Integer.valueOf(pairs[1]);
                 }
-                if (line.startsWith("auto_start") && line.contains("=")) {
+                if (line.startsWith("mode_switch") && line.contains("=")) {
                     String[] pairs = line.split("=");
                     if (pairs.length != 2) continue;
-                    autoStart = pairs[1].equals("true");
+                    modeSwitch = Boolean.valueOf(pairs[1]);
                 }
             }
 
-        } catch (IOException e) {
-            Log.e("Error", "Could not open properties file");
+        } catch (Exception e) {
+            Log.e("Error", "Could not load App properties");
         }
     }
 
@@ -165,31 +186,24 @@ public class ConnectionProperties {
         try (PrintWriter writer = new PrintWriter(
                 new OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE), "UTF-8"))) {
             StringBuilder sb = new StringBuilder();
-            sb.append("ip_address=");
-            if (ipAddress != null) {
-                sb.append(ipAddress);
-            }
+            sb.append("brightness=");
+            sb.append(brightness);
             writer.println(sb.toString());
 
             sb = new StringBuilder();
-            sb.append("mac_address=");
-            if (macAddress != null) {
-                sb.append(macAddress);
-            }
+            sb.append("delay=");
+            sb.append(delay);
             writer.println(sb.toString());
 
             sb = new StringBuilder();
-            sb.append("user_name=");
-            if (userName != null) {
-                sb.append(userName);
-            }
+            sb.append("sensitivity=");
+            sb.append(sensitivity);
             writer.println(sb.toString());
 
             sb = new StringBuilder();
-            sb.append("auto_start=");
-            sb.append(autoStart ? "true" : "false");
+            sb.append("mode_switch=");
+            sb.append(modeSwitch);
             writer.print(sb.toString());
-
         } catch (IOException e) {
             Log.e("Error", "Could not save properties");
         }

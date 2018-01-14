@@ -146,7 +146,7 @@ public class AudioManager {
                 sensitivity = 1.6F;
                 break;
             case POP:
-            case AUTOMATICAL:
+            case AUTOMATIC:
             default:
                 sensitivity = 1.35F;
         }

@@ -150,6 +150,7 @@ public class SetupActivity extends AppCompatActivity {
     private void connectToBridge(PHAccessPoint accessPoint) {
         ConnectionProperties connectionProperties = BridgeController.getInstance().getConnectionProperties();
         connectionProperties.setIpAddress(accessPoint.getIpAddress());
+        connectionProperties.setMacAddress(accessPoint.getMacAddress());
         accessPoint.setUsername(connectionProperties.getUserName());
         BridgeController.getInstance().getPHHueSDK().connect(accessPoint);
     }
@@ -178,7 +179,7 @@ public class SetupActivity extends AppCompatActivity {
                 SetupActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter.add(accessPoint.getIpAddress());
+                        adapter.add(accessPoint.getIpAddress() + " | " + accessPoint.getMacAddress());
                     }
                 });
             }
@@ -210,6 +211,7 @@ public class SetupActivity extends AppCompatActivity {
             ConnectionProperties connectionProperties = BridgeController.getInstance().getConnectionProperties();
             connectionProperties.setUserName(username);
             connectionProperties.saveProperties();
+            BridgeController.getInstance().setConnected(true);
             SetupActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -218,7 +220,6 @@ public class SetupActivity extends AppCompatActivity {
                     finish();
                 }
             });
-            BridgeController.getInstance().setConnected(true);
         }
 
         @Override

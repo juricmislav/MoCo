@@ -28,6 +28,7 @@
         android:background="@color/colorBackground"
         android:text="@string/auto_connect_start"
         android:textSize="@dimen/text_size_large"
+        android:layout_margin="@dimen/text_size_small"
         android:textColor="@color/buttonTextColor"/>
 
     <Button

@@ -3,13 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.htwg.moco.bulbdj.activities.MainActivity">
     <item
-        android:id="@+id/action_manual"
-        android:orderInCategory="90"
-        android:title="@string/action_adjust"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_find_light"
+        android:orderInCategory="105"
+        android:title="@string/action_find"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_manual"
+        android:orderInCategory="110"
+        android:title="@string/action_adjust"
+        app:showAsAction="ifRoom" />
 </menu>

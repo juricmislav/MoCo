@@ -3,12 +3,13 @@
     package="de.htwg.moco.bulbdj">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="false"
-        android:logo="@drawable/icon"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:logo="@drawable/icon"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -22,10 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ManualActivity" />
+        <activity android:name=".activities.AdjustActivity" />
         <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.SetupActivity"></activity>
+        <activity android:name=".activities.SetupActivity" />
+        <activity
+            android:name=".activities.FindLightActivity"
+            android:windowSoftInputMode="stateVisible"/>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

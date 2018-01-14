@@ -4,14 +4,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,22 +22,19 @@ import android.widget.Toast;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHBridgeResourcesCache;
 import com.philips.lighting.model.PHHueParsingError;
-import com.philips.lighting.model.PHLight;
-import com.philips.lighting.model.PHLightState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.htwg.moco.bulbdj.R;
 import de.htwg.moco.bulbdj.bridge.BridgeController;
+import de.htwg.moco.bulbdj.data.AppProperties;
 import de.htwg.moco.bulbdj.data.ConnectionProperties;
 import de.htwg.moco.bulbdj.detector.AudioManager;
-import de.htwg.moco.bulbdj.detector.BeatDetector;
 import de.htwg.moco.bulbdj.detector.Modes;
 import de.htwg.moco.bulbdj.renderers.LEDRenderer;
 import de.htwg.moco.bulbdj.views.DemoView;
@@ -47,13 +42,13 @@ import de.htwg.moco.bulbdj.views.VisualizerView;
 
 /**
  * Class represents main activity that is shown when application is started.
- * <br>
- * Functionalities of app:
- * <p>Setup of connection to the bridge
- * <p>Listening to the surrounding sound and tweeting the lights depending on the rhythm
- * and user preferences.
  * <p>
- * ...TO DO...
+ * Functionalities of app:
+ * <br>Setup of connection to the bridge
+ * <br>Listening to the surrounding sound and tweeting the lights depending on the rhythm
+ * and user preferences.
+ * <br>Finding new lights
+ * <br>Adjustment of app: sensitivity, mode(s), maximum frequency, brightness.
  *
  * @author Mislav Jurić
  * @version 1.0
@@ -70,38 +65,93 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
-
+    /**
+     * Audio manager reference.
+     */
     private AudioManager audioManager;
+
+    /**
+     * LED renderer manager reference.
+     */
     private LEDRenderer ledRenderer;
 
-    private VisualizerView visualizerView;
-    private DemoView demoView;
+    /**
+     * Visualizer view reference.
+     */
+    @BindView(R.id.visualizer_view)
+    VisualizerView visualizerView;
 
-    private Button recordButton;
+    /**
+     * Demo view reference.
+     */
+    @BindView(R.id.demo_view)
+    DemoView demoView;
+
+    /**
+     * Start / stop switch reference.
+     */
+    @BindView(R.id.start_stop_btn)
+    Button recordButton;
+
+    /**
+     * Toolbar reference.
+     */
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    /**
+     * Spinner mode reference.
+     */
+    @BindView(R.id.mode_spinner)
+    Spinner modeSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         BridgeController.setContext(this.getApplicationContext());
         BridgeController.getInstance().registerPhsdkListener(phsdkListener);
+        AppProperties.getInstance().setContext(this.getApplicationContext());
 
         if (BridgeController.getInstance().getConnectionProperties().isAutoStart() &&
                 BridgeController.getInstance().propertiesDefined()) {
             autoConnect();
         }
 
-        recordButton = (Button) findViewById(R.id.start_stop_btn);
-        visualizerView = (VisualizerView) findViewById(R.id.visualizerView);
         visualizerView.setRadius(recordButton.getWidth());
-        demoView = (DemoView) findViewById(R.id.demoView);
         ledRenderer = LEDRenderer.getInstance();
         audioManager = AudioManager.getInstance();
 
-        Spinner modeSpinner = (Spinner) findViewById(R.id.modeSpinner);
+        initModeSpinner();
+
+        initAudioManager();
+
+        initLEDRenderer();
+
+        loadSettings();
+
+        if (!BridgeController.getInstance().isConnected()) {
+            demoView.setVisibility(View.VISIBLE);
+        }
+
+        if (audioManager.isRunning())
+            recordButton.setText(R.string.stop);
+    }
+
+    /**
+     * Load all settings.
+     */
+    private void loadSettings() {
+        audioManager.setSettings(AppProperties.getInstance().getSensitivity());
+        audioManager.setBeatDetectorOn(AppProperties.getInstance().isModeSwitch());
+    }
+
+    /**
+     * Methods initializes mode spinner component.
+     */
+    private void initModeSpinner() {
         ArrayAdapter spinnerAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, getResources().getStringArray(R.array.modes_array));
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         modeSpinner.setAdapter(spinnerAdapter);
@@ -125,7 +175,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    /**
+     * Methods initializes audio manager.
+     */
+    private void initAudioManager() {
         audioManager.setAudioMangerListener(new AudioManager.AudioManagerListener() {
             @Override
             public void onBeatDetected(ArrayList<Object[]> beats) {
@@ -147,49 +202,25 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+    }
 
+    /**
+     * Methods initializes LED renderer.
+     */
+    private void initLEDRenderer() {
         ledRenderer.setLEDRendererListener(new LEDRenderer.LEDRendererListener() {
 
             @Override
-            public void onUpdate(int[] bulbs) {
-                //if (!BridgeController.getInstance().isConnected()) {
-                // Show LEDs on Display
-                demoView.updateVisualizer(bulbs);
-                //} else {
-                if (BridgeController.getInstance().isConnected()) {
-                    // TODO test
-                    // SHow LEDs on PHBridge
-                    PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-                    PHBridgeResourcesCache cache = bridge.getResourceCache();
+            public void onUpdate(int[] bulbColors) {
 
-                    List<PHLight> allLights = cache.getAllLights();
-                    if (allLights == null || allLights.isEmpty()) {
-                        return;
-                    }
+                demoView.updateVisualizer(bulbColors);
 
-                    int color = 0;
-                    int MAX_HUE = 65535;
+                BridgeController bridgeController = BridgeController.getInstance();
+                if (bridgeController.isLightsEmpty()) return;
 
-                    Random rand = new Random();
-                    int nextRandom = rand.nextInt(MAX_HUE);
-                    for (int i = 0; i < allLights.size(); i++) {
-//                        if (i < bulbs.length)
-//                            color = bulbs[i];
-//
-//                        // Color conversion
-//                        float[] hsv = new float[3];
-//                        Color.colorToHSV(color, hsv);
-//                        int hue = (int) (hsv[0] * 182);
-//                        int sat = (int) (hsv[1] * 254);
-//                        int val = Color.alpha(color);//(int)(hsv[2] * 254);
-
-                        PHLight light = allLights.get(i);
-                        PHLightState lightState = new PHLightState();
-
-                        lightState.setHue(nextRandom);
-                        lightState.setBrightness(105);
-                        bridge.updateLightState(light, lightState);
-                    }
+                int counter = 0;
+                for (String light : bridgeController.getAllLights()) {
+                    bridgeController.setLightColor(light, bulbColors[counter++ % 3]);
                 }
             }
 
@@ -198,27 +229,21 @@ public class MainActivity extends AppCompatActivity {
                 demoView.stop();
             }
         });
-
-        loadSettings();
-
-        if (!BridgeController.getInstance().isConnected()) {
-            demoView.setVisibility(View.VISIBLE);
-        }
-
-        // Load stuff after orientation changed etc.
-        if (audioManager.isRunning())
-            recordButton.setText(R.string.stop);
     }
 
     /**
-     * Load all settings.
+     * Methods sets brightness of lights
+     *
+     * @param brightnessValue value of lights' brightness
      */
-    private void loadSettings() {
-        SharedPreferences settings = getSharedPreferences("beatDetection", MODE_PRIVATE);
-        int sensitivity = settings.getInt("sensitivity", -1);
-        int mode = settings.getInt("mode", 0);
-        audioManager.setSettings(sensitivity);
-        audioManager.setBeatDetectorOn(mode == 0);
+    private void setLightBrightness(int brightnessValue) {
+        if (!BridgeController.getInstance().isConnected() || BridgeController.getInstance().isLightsEmpty())
+            return;
+
+        for (String idn : BridgeController.getInstance().getAllLights()) {
+            BridgeController.getInstance().setLightBrightness(idn, brightnessValue);
+        }
+
     }
 
     @Override
@@ -249,14 +274,23 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                intent = new Intent(this, SettingsActivity.class);
+                startActivityForResult(intent, DISPLAY_RESULT_CODE);
+                return true;
+            case R.id.action_find_light:
+                if (!BridgeController.getInstance().isConnected()) {
+                    Toast.makeText(this.getApplicationContext(), "Not Connected", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                intent = new Intent(this, FindLightActivity.class);
                 startActivityForResult(intent, DISPLAY_RESULT_CODE);
                 return true;
             case R.id.action_manual:
-                Intent i = new Intent(this, ManualActivity.class);
-                startActivity(i);
+                intent = new Intent(this, AdjustActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -269,9 +303,10 @@ public class MainActivity extends AppCompatActivity {
     private void autoConnect() {
         ConnectionProperties connectionProperties = BridgeController.getInstance().getConnectionProperties();
         String ipAddress = connectionProperties.getIpAddress();
+        String macAddress = connectionProperties.getMacAddress();
         String userName = connectionProperties.getUserName();
 
-        PHAccessPoint accessPoint = new PHAccessPoint(ipAddress, userName, null);
+        PHAccessPoint accessPoint = new PHAccessPoint(ipAddress, userName, macAddress);
         BridgeController.getInstance().getPHHueSDK().connect(accessPoint);
     }
 
@@ -330,63 +365,6 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
     }
 
-    /*
-    @OnClick(R.id.random_lights)
-    void randomLights() {
-        if (!BridgeController.getInstance().isConnected()) return;
-        PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-        PHBridgeResourcesCache cache = bridge.getResourceCache();
-
-        List<PHLight> allLights = cache.getAllLights();
-        Random rand = new Random();
-
-        for (PHLight light : allLights) {
-
-            PHLightState lightState = new PHLightState();
-            lightState.setHue(rand.nextInt(65535));
-            lightState.setBrightness(light.getLastKnownLightState().getBrightness());
-            bridge.updateLightState(light, lightState);
-        }
-    }
-    */
-
-    /**
-     * Method initializes listener for the seek bar.
-     */
-    /*
-    void setSeekBarListener() {
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (!BridgeController.getInstance().isConnected()) return;
-                PHBridge bridge = BridgeController.getInstance().getPHHueSDK().getSelectedBridge();
-                PHBridgeResourcesCache cache = bridge.getResourceCache();
-
-                List<PHLight> allLights = cache.getAllLights();
-                Random rand = new Random();
-
-                for (PHLight light : allLights) {
-
-                    PHLightState lightState = new PHLightState();
-                    lightState.setHue(light.getLastKnownLightState().getHue());
-                    lightState.setBrightness((int) (2.55 * i));
-                    bridge.updateLightState(light, lightState);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
-    */
-
     /**
      * Method is executed on activity result.
      * <br>In case result code equals SetupActivity.STATUS_OK, app is connected to bridge.
@@ -399,9 +377,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == DISPLAY_RESULT_CODE && resultCode == SettingsActivity.STATUS_OK) {
             Toast.makeText(this.getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+            setLightBrightness(AppProperties.getInstance().getBrightness());
+            loadSettings();
         }
         if (requestCode == DISPLAY_RESULT_CODE && resultCode == SettingsActivity.STATUS_DISCONNECTED) {
             Toast.makeText(this.getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
+        }
+        if (requestCode == DISPLAY_RESULT_CODE && resultCode == FindLightActivity.LIGHT_FOUND) {
+            Toast.makeText(this.getApplicationContext(), "Light found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -432,6 +415,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             BridgeController.getInstance().setConnected(true);
+            setLightBrightness(AppProperties.getInstance().getBrightness());
+            loadSettings();
         }
 
         @Override

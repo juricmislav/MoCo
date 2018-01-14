@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ManualActivity">
+    tools:context=".activities.AdjustActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/manual_toolbar"
+                android:id="@+id/adjust_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary" />
@@ -32,11 +32,11 @@
             tools:layout_editor_absoluteY="8dp">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/delayBar"
-                android:layout_alignStart="@+id/modeSwitch"
+                android:layout_alignBottom="@+id/delay_bar"
+                android:layout_alignStart="@+id/mode_switch"
                 android:textColor="@color/textColorSecondary"
                 android:text="@string/maxFPS" />
 
@@ -44,15 +44,15 @@
                 android:id="@+id/delay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/textView"
-                android:layout_alignEnd="@+id/modeSwitch"
-                android:layout_toEndOf="@+id/textView"
+                android:layout_alignBottom="@+id/text_view"
+                android:layout_alignEnd="@+id/mode_switch"
+                android:layout_toEndOf="@+id/text_view"
                 android:textAlignment="center"
                 android:textColor="@color/textColorSecondary"
                 android:text="50" />
 
             <SeekBar
-                android:id="@+id/delayBar"
+                android:id="@+id/delay_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -61,34 +61,53 @@
                 android:layout_toEndOf="@+id/delay" />
 
             <Switch
-                android:id="@+id/modeSwitch"
+                android:id="@+id/mode_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/textViewSensitivity"
-                android:layout_below="@+id/textView"
+                android:layout_alignStart="@+id/text_view_sensitivity"
+                android:layout_below="@+id/text_view"
                 android:layout_marginTop="19dp"
                 android:checked="true"
                 android:text="@string/beatDetection"
                 android:textColor="@color/textColorSecondary" />
 
             <TextView
-                android:id="@+id/textViewSensitivity"
+                android:id="@+id/text_view_sensitivity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/modeSwitch"
+                android:layout_below="@+id/mode_switch"
                 android:layout_marginStart="19dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/sensitivity"
                 android:textColor="@color/textColorSecondary" />
 
             <SeekBar
-                android:id="@+id/sensitivityBar"
+                android:id="@+id/sensitivity_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/textViewSensitivity"
+                android:layout_alignBottom="@+id/text_view_sensitivity"
                 android:layout_marginStart="21dp"
-                android:layout_toEndOf="@+id/textViewSensitivity" />
+                android:layout_toEndOf="@+id/text_view_sensitivity" />
+
+            <TextView
+                android:id="@+id/textViewBrightness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/sensitivity_bar"
+                android:layout_marginStart="19dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/brightness"
+                android:textColor="@color/textColorSecondary" />
+
+            <SeekBar
+                android:id="@+id/brightness_Bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textViewBrightness"
+                android:layout_marginStart="21dp"
+                android:layout_toEndOf="@+id/text_view_sensitivity" />
 
         </RelativeLayout>
 

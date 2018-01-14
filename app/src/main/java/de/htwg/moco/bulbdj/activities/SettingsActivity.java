@@ -29,7 +29,6 @@ import de.htwg.moco.bulbdj.data.ConnectionProperties;
  * @version 1.0
  */
 public class SettingsActivity extends AppCompatActivity {
-
     /**
      * Auto connect switch when app starts.
      */
