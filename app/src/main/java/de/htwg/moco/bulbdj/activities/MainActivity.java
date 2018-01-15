@@ -2,7 +2,6 @@ package de.htwg.moco.bulbdj.activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -162,10 +161,9 @@ public class MainActivity extends AppCompatActivity {
                 ledRenderer.setMode(Modes.values()[i]);
 
                 int value = 100 - (int) ((audioManager.getSensitivity(Modes.values()[i]) - 1F) * 100F);
-                SharedPreferences settings = getSharedPreferences("beatDetection", MODE_PRIVATE);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt("sensitivity", value);
-                editor.commit();
+
+                AppProperties.getInstance().setSensitivity(value);
+                AppProperties.getInstance().saveProperties();
 
                 audioManager.setMode(Modes.values()[i]);
             }

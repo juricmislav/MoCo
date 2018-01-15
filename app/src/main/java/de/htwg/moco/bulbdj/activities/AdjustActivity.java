@@ -1,6 +1,5 @@
 package de.htwg.moco.bulbdj.activities;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +16,6 @@ import de.htwg.moco.bulbdj.R;
 import de.htwg.moco.bulbdj.bridge.BridgeController;
 import de.htwg.moco.bulbdj.data.AppProperties;
 import de.htwg.moco.bulbdj.detector.AudioManager;
-import de.htwg.moco.bulbdj.detector.Types;
 import de.htwg.moco.bulbdj.renderers.LEDRenderer;
 
 /**
@@ -162,6 +160,7 @@ public class AdjustActivity extends AppCompatActivity {
                 AppProperties.getInstance().setModeSwitch(isChecked);
                 AppProperties.getInstance().saveProperties();
                 modeSwitchChanged(isChecked);
+                AudioManager.getInstance().setBeatDetectorOn(isChecked);
             }
         });
     }
@@ -173,7 +172,6 @@ public class AdjustActivity extends AppCompatActivity {
      */
     private void modeSwitchChanged(boolean isChecked) {
         if (isChecked) {
-
             sensitivityBar.setVisibility(View.VISIBLE);
             textViewSensitivity.setVisibility(View.VISIBLE);
         } else {

@@ -220,15 +220,14 @@ public class LEDRenderer {
                 beats.add((BeatDetector.BEAT_TYPE) beatsObj[0]);
         }
 
-        if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
+        if (beats == null) {
+            if (!beats.contains(BeatDetector.BEAT_TYPE.KICK))
             bulbs[0] = Color.argb(0, 0, 0, 0);
-        if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-            bulbs[1] = Color.argb(0, 0, 0, 0);
-        if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.HAT))
-            bulbs[2] = Color.argb(0, 0, 0, 0);
-
-
-        if (beats != null) {
+            if (!beats.contains(BeatDetector.BEAT_TYPE.SNARE))
+                bulbs[1] = Color.argb(0, 0, 0, 0);
+            if (!beats.contains(BeatDetector.BEAT_TYPE.HAT))
+                bulbs[2] = Color.argb(0, 0, 0, 0);
+        } else {
             for (Object[] beatObj : beatsObjs) {
                 int energy = (int) (((float) beatObj[1]) * 110) + 80;
                 energy = Math.min(255, energy);

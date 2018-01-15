@@ -53,7 +53,6 @@ public class BeatDetector {
     private ArrayList<Object[]> beats = new ArrayList<Object[]>();
     private float lastBeatEnergy = 0;
 
-    private int samplingRate = -1;
     private int historySize = -1;
     private int fftSize = -1;
     private int historyPos = 0;
@@ -73,7 +72,6 @@ public class BeatDetector {
      */
     public BeatDetector(int samplingRate, int fftSize) {
         this.listener = null;
-        this.samplingRate = samplingRate;
         this.historySize = samplingRate / fftSize;
         this.fftSize = fftSize / divisions;
         this.fftSubBands = new float[fftSubBandsCount];
@@ -209,8 +207,6 @@ public class BeatDetector {
             beats.add(new Object[] {BEAT_TYPE.MANUAL, lastBeatEnergy});
         }
 
-        if (beats.size() > 1)
-            Log.d("test", "WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOW");
         return beats;
     }
 
