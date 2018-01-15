@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadSettings() {
         audioManager.setSettings(AppProperties.getInstance().getSensitivity());
         audioManager.setBeatDetectorOn(AppProperties.getInstance().isModeSwitch());
+        ledRenderer.getInstance().setDelay(AppProperties.getInstance().getDelay());
     }
 
     /**
