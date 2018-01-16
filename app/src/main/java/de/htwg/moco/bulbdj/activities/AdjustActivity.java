@@ -37,6 +37,12 @@ public class AdjustActivity extends AppCompatActivity {
     TextView textViewSensitivity;
 
     /**
+     * Brightness text view reference.
+     */
+    @BindView(R.id.textViewBrightness)
+    TextView textViewBrightness;
+
+    /**
      * Mode switch reference.
      */
     @BindView(R.id.mode_switch)
@@ -174,10 +180,14 @@ public class AdjustActivity extends AppCompatActivity {
         if (isChecked) {
             sensitivityBar.setVisibility(View.VISIBLE);
             textViewSensitivity.setVisibility(View.VISIBLE);
+            brightnessBar.setVisibility(View.VISIBLE);
+            textViewBrightness.setVisibility(View.VISIBLE);
         } else {
             AppProperties.getInstance().setModeSwitch(false);
             sensitivityBar.setVisibility(View.INVISIBLE);
             textViewSensitivity.setVisibility(View.INVISIBLE);
+            brightnessBar.setVisibility(View.INVISIBLE);
+            textViewBrightness.setVisibility(View.INVISIBLE);
         }
     }
 

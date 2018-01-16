@@ -3,18 +3,21 @@ package de.htwg.moco.bulbdj.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -119,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             autoConnect();
         }
 
-        visualizerView.setRadius(recordButton.getWidth());
         ledRenderer = LEDRenderer.getInstance();
         audioManager = AudioManager.getInstance();
 
@@ -137,6 +139,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (audioManager.isRunning())
             recordButton.setText(R.string.stop);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if (visualizerView != null && recordButton != null) {
+            visualizerView.setRadius(recordButton.getWidth() / 2);
+        }
     }
 
     /**
@@ -219,7 +230,11 @@ public class MainActivity extends AppCompatActivity {
 
                 int counter = 0;
                 for (String light : bridgeController.getAllLights()) {
-                    bridgeController.setLightColor(light, bulbColors[counter++ % 3]);
+                    if (audioManager.isDetectorOn()) {
+                        bridgeController.setLightColor(light, bulbColors[counter++ % 3]);
+                    } else {
+                        bridgeController.setLightColorAndBrightness(light, bulbColors[counter++ % 3], Color.alpha(bulbColors[counter++ % 3]));
+                    }
                 }
             }
 
@@ -324,6 +339,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void startRecorder() {
         audioManager.start();
+        int i = modeSpinner.getSelectedItemPosition();
+        ledRenderer.setMode(Modes.values()[i]);
     }
 
     /**

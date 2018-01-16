@@ -128,7 +128,19 @@ public class LEDRenderer {
                                     {Color.parseColor("#BA9F02"), Color.parseColor("#C41C0A"), Color.parseColor("#AAAAAA")}, // RAP
                                     {Color.parseColor("#BA9C02"), Color.parseColor("#C48C0A"), Color.parseColor("#C44D0A"), Color.parseColor("#BA2509")},    // ROCK
                                     {Color.parseColor("#BA0276"), Color.parseColor("#04B1BA"), Color.parseColor("#0A59C4")},   // DANCE
-                                    {Color.parseColor("#0039AD"), Color.parseColor("#8C03BA"), Color.parseColor("#0AAAC4"), Color.parseColor("#04BA5A")}};  // ELECTRO
+                                    {Color.parseColor("#0039AD"), Color.parseColor("#8C03BA"), Color.parseColor("#0AAAC4"), Color.parseColor("#04BA5A")},   // ELECTRO
+                                    {Color.parseColor("#FF24DB"), Color.parseColor("#E8680C"), Color.parseColor("#FF4839"), Color.parseColor("#F3FF97")}};  // ROMATIC
+
+    /**
+     * Colors when the lights are off (background colors).
+     */
+    private final int [] offColors = {Color.parseColor("#FFFFFF"),
+            Color.parseColor("#FFDC00"),
+            Color.parseColor("#FF9B0C"),
+            Color.parseColor("#FF6E4D"),
+            Color.parseColor("#396FFF"),
+            Color.parseColor("#3799FF"),
+            Color.parseColor("#E8478A")};
 
     /**
      * Different interval for all modes
@@ -191,6 +203,7 @@ public class LEDRenderer {
                 modeI = 5;
                 break;
             case AUTOMATIC:
+                lastModeChecked = System.currentTimeMillis();
             default:
                 modeI = 0;
         }
@@ -221,11 +234,11 @@ public class LEDRenderer {
         }
 
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.KICK))
-            bulbs[0] = Color.argb(0, 0, 0, 0);
+            bulbs[0] = offColors[mode];
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.SNARE))
-            bulbs[1] = Color.argb(0, 0, 0, 0);
+            bulbs[1] = offColors[mode];
         if (beats == null || !beats.contains(BeatDetector.BEAT_TYPE.HAT))
-            bulbs[2] = Color.argb(0, 0, 0, 0);
+            bulbs[2] = offColors[mode];
 
         if (beats != null) {
             for (Object[] beatObj : beatsObjs) {
@@ -303,12 +316,13 @@ public class LEDRenderer {
 
             lastUpdateTime = System.currentTimeMillis();
 
-            /*countBeats++;
-            if (autoMode && lastUpdateTime - checkModeDelay > lastModeChecked) {
-                lastModeChecked = lastUpdateTime;
+            if (lastModeChecked > 0)
+                countBeats++;
+            if (autoMode && lastModeChecked > 0 && lastUpdateTime - checkModeDelay > lastModeChecked) {
+                lastModeChecked = 0;
                 changeMode();
                 countBeats = 0;
-            }*/
+            }
 
             // Log
             String s = "";
@@ -331,17 +345,17 @@ public class LEDRenderer {
     private void changeMode() {
         Modes mode = Modes.AUTOMATIC;
 
-        if (countBeats > 0 && countBeats < 60) {
+        if (countBeats > 0 && countBeats < 30) {
             mode = Modes.ROMANTIC;
-        } else if (countBeats < 20) {
-            mode = Modes.RAP;
-        } else if (countBeats < 25) {
-            mode = Modes.ROCK;
-        } else if (countBeats < 30) {
-            mode = Modes.DANCE;
-        } else if (countBeats < 35) {
-            mode = Modes.POP;
         } else if (countBeats < 40) {
+            mode = Modes.RAP;
+        } else if (countBeats < 50) {
+            mode = Modes.ROCK;
+        } else if (countBeats < 60) {
+            mode = Modes.DANCE;
+        } else if (countBeats < 70) {
+            mode = Modes.POP;
+        } else if (countBeats < 80) {
             mode = Modes.ELECTRO;
         }
 
@@ -397,6 +411,7 @@ public class LEDRenderer {
      * Call the stop function.
      */
     public void stop() {
+        lastModeChecked = 0;
         if(listener != null)
             listener.onStop();
     }

@@ -88,4 +88,13 @@ public class BarGraphRenderer {
 
         canvas.drawLines(mFFTPoints, paint);
     }
+
+    /**
+     * Setter method.
+     *
+     * @param radius of the bars.
+     */
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
 }

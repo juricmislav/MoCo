@@ -44,6 +44,9 @@ public class VisualizerView extends View {
 
     public void setRadius(int radius) {
         this.radius = radius;
+        if (renderer != null) {
+            renderer.setRadius(this.radius);
+        }
     }
 
     public void init() {

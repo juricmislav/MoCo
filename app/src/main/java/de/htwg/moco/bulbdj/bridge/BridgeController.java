@@ -258,4 +258,31 @@ public class BridgeController {
         } catch (Exception e) {
         }
     }
+
+    /**
+     * Method sets light bulb's color and brightness.
+     *
+     * @param idn light bulbs' identifier
+     * @param brightness value set for color
+     * @param brightness value set for brightness
+     */
+    public void setLightColorAndBrightness(String idn, int color, int brightness) {
+        PHLight light = getLight(idn);
+        if (!connected || pHHueSDK == null || pHHueSDK.getSelectedBridge() == null || light == null) return;
+
+        float[] HSV = new float[3];
+        Color.colorToHSV(color, HSV);
+
+        PHLightState lightState = new PHLightState();
+
+        lightState.setHue(Math.round(HSV[0] / 360 * MAX_HUE));
+        lightState.setSaturation(Math.round(HSV[1] * MAX_SATURATION));
+        lightState.setBrightness(brightness);
+        lightState.setTransitionTime(0);
+
+        try {
+            pHHueSDK.getSelectedBridge().updateLightState(light, lightState);
+        } catch (Exception e) {
+        }
+    }
 }
