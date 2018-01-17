@@ -107,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.mode_spinner)
     Spinner modeSpinner;
 
+    /**
+     * This change is done automatically.
+     */
+    private boolean autoChange = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +174,10 @@ public class MainActivity extends AppCompatActivity {
         modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ledRenderer.setModeAuto(i == 0);
+                if (!autoChange) {
+                    ledRenderer.setModeAuto(i == 0);
+                }
+                autoChange = false;
                 ledRenderer.setMode(Modes.values()[i]);
 
                 int value = 100 - (int) ((audioManager.getSensitivity(Modes.values()[i]) - 1F) * 100F);
@@ -241,6 +249,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStop() {
                 demoView.stop();
+            }
+
+            @Override
+            public void onAutoModeChanged(int mode) {
+                if (mode > 0) {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this.getApplicationContext(), R.string.mode_changed, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    autoChange = true;
+                }
+                modeSpinner.setSelection(mode);
             }
         });
     }

@@ -35,6 +35,12 @@ public class LEDRenderer {
          * Stop the LED lights.
          */
         void onStop();
+
+        /**
+         * Mode was detected.
+         * @param mode that was automatically detected
+         */
+        void onAutoModeChanged(int mode);
     }
 
     /**
@@ -118,7 +124,7 @@ public class LEDRenderer {
     /**
      * Is the mode automatic.
      */
-    private boolean autoMode;
+    private boolean autoMode = true;
 
     /**
      * Possible colors for all modes.
@@ -146,6 +152,7 @@ public class LEDRenderer {
      * Different interval for all modes
      */
     private final int [] colorInterval = {2000,
+            2000,
             2000,
             2000,
             2000,
@@ -201,6 +208,9 @@ public class LEDRenderer {
                 break;
             case ELECTRO:
                 modeI = 5;
+                break;
+            case ROMANTIC:
+                modeI = 6;
                 break;
             case AUTOMATIC:
                 lastModeChecked = System.currentTimeMillis();
@@ -359,8 +369,11 @@ public class LEDRenderer {
             mode = Modes.ELECTRO;
         }
 
-        Log.d("Mode change", "Mode change to: " + mode.name() + " (detected " + countBeats + " beats)");
         setMode(mode);
+        Log.d("Mode change", "Mode change to: " + mode.name() + " (detected " + countBeats + " beats)");
+        if (listener != null) {
+            listener.onAutoModeChanged(this.mode);
+        }
     }
 
     /**
@@ -412,7 +425,11 @@ public class LEDRenderer {
      */
     public void stop() {
         lastModeChecked = 0;
-        if(listener != null)
+        if(listener != null) {
             listener.onStop();
+            if (autoMode) {
+                listener.onAutoModeChanged(0);
+            }
+        }
     }
 }
