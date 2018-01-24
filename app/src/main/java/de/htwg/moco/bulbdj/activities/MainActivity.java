@@ -179,13 +179,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 autoChange = false;
                 ledRenderer.setMode(Modes.values()[i]);
+                audioManager.setMode(Modes.values()[i]);
 
                 int value = 100 - (int) ((audioManager.getSensitivity(Modes.values()[i]) - 1F) * 100F);
 
                 AppProperties.getInstance().setSensitivity(value);
                 AppProperties.getInstance().saveProperties();
+                audioManager.setSettings(value);
 
-                audioManager.setMode(Modes.values()[i]);
             }
 
             @Override

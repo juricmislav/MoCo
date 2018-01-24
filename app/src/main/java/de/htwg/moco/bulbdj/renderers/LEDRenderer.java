@@ -320,14 +320,17 @@ public class LEDRenderer {
      * @param bulbs are the different colors of the bulbs.
      */
     private void doUpdate(int[] bulbs) {
+        if (!Arrays.equals(bulbs, this.bulbs)) {
+            if (bulbs.length > 0 && Color.alpha(bulbs[0]) > 0) {
+                countBeats++;
+            }
+        }
 
         if (listener != null && System.currentTimeMillis() - delay > lastUpdateTime && !Arrays.equals(bulbs, this.bulbs)) {
             this.bulbs = bulbs;
 
             lastUpdateTime = System.currentTimeMillis();
 
-            if (lastModeChecked > 0)
-                countBeats++;
             if (autoMode && lastModeChecked > 0 && lastUpdateTime - checkModeDelay > lastModeChecked) {
                 lastModeChecked = 0;
                 changeMode();
@@ -355,17 +358,17 @@ public class LEDRenderer {
     private void changeMode() {
         Modes mode = Modes.AUTOMATIC;
 
-        if (countBeats > 0 && countBeats < 30) {
-            mode = Modes.ROMANTIC;
-        } else if (countBeats < 40) {
+        if (countBeats > 0 && countBeats < 150) {
             mode = Modes.RAP;
-        } else if (countBeats < 50) {
+        } else if (countBeats < 200) {
             mode = Modes.ROCK;
-        } else if (countBeats < 60) {
-            mode = Modes.DANCE;
-        } else if (countBeats < 70) {
+        } else if (countBeats < 280) {
+            mode = Modes.ROMANTIC;
+        } else if (countBeats < 300) {
             mode = Modes.POP;
-        } else if (countBeats < 80) {
+        } else if (countBeats < 320) {
+            mode = Modes.DANCE;
+        } else if (countBeats < 450) {
             mode = Modes.ELECTRO;
         }
 

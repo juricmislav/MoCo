@@ -1,7 +1,5 @@
 package de.htwg.moco.bulbdj.detector;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 /**
@@ -60,7 +58,7 @@ public class BeatDetector {
     private int timeToWait = 0;    // In milliseconds
     private int fftSubBandsCount = 64;  //32;   // More Bands = more sensitivity. Less Bands = more recognizations for different music types.
     private long lastBeat = 0;
-    private float threshold = 0.05F;
+    private float threshold = 0.2F;
     private float sensitivity = 1.35F;
     private int manualLow = -1;
     private int manualHigh = -1;
